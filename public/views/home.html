@@ -1,0 +1,109 @@
+<div  layout-fill >
+    <md-toolbar layout="row" layout-align="center end" >
+        <div flex="10" flex-sm="10" flex-md="15">
+            <h3>OpServ</h3>
+        </div>
+        <div flex="80" flex-sm="70" flex-md="70">
+            <md-tabs class="no-body" md-selected="selectedIndex" md-center-tabs>
+                <md-tab  ng-repeat="tab in tabs" label="{{tab.title}}">
+                </md-tab>
+            </md-tabs>
+        </div>
+        <div flex="10" flex-sm="20" flex-md="15">
+            <md-menu  md-position-mode="target-right target" md-offset="-20 40">
+                <md-button ng-click="openMenu($mdOpenMenu, $event)">
+                    Account
+                    <md-icon style="margin-bottom: 8px" class="material-icons">person</md-icon>
+                </md-button>
+                <md-menu-content md-whiteframe="20" class="blackground" width="4">
+                    <md-menu-item ng-repeat="item in [1, 2, 3]">
+                        <md-button ng-click="ctrl.announceClick($index)">
+                            <div layout="row" flex="">
+                                <p flex="">Option {{item}}</p>
+                            </div>
+                        </md-button>
+                    </md-menu-item>
+                    <!--<md-menu-divider></md-menu-divider>-->
+                </md-menu-content>
+            </md-menu>
+        </div>
+    </md-toolbar>
+
+    <md-tabs class="on-top no-tab-panel main" flex layout="column" layout-fill md-selected="selectedIndex">
+        <md-tab  layout-fill ng-repeat="tab in tabs" label="{{tab.title}}">
+            <md-toolbar class="small-tool-bar" ng-show="isEditMode">
+                <div class="md-toolbar-tools">
+                    <md-button ng-click="addItem(tab,item)">
+                        <md-icon class="material-icons" >computer</md-icon>
+                    </md-button>
+                    <md-button ng-click="addItem(tab,item)">
+                        <md-icon class="material-icons" >memory</md-icon>
+                    </md-button>
+                    <md-button ng-click="addItem(tab,item)">
+                        <md-icon class="material-icons" >wifi</md-icon>
+                    </md-button>
+                    <md-button ng-click="addItem(tab,item)">
+                        <md-icon class="material-icons" >storage</md-icon>
+                    </md-button>
+                    <md-button ng-click="addItem(tab,item)">
+                        <md-icon class="material-icons" >power</md-icon>
+                    </md-button>
+                    <span flex=""></span>
+                    <md-button class="md-mini" ng-click="toggleEditMode()">
+                        <md-icon class="material-icons" >exit_to_app</md-icon>
+                    </md-button>
+                </div>
+            </md-toolbar>
+            <div gridster="gridsterOpts">
+                <ul>
+                    <div md-whiteframe="20" gridster-item="item" ng-repeat="item in tab.items" id="{{item.id}}" class="my_grid_item">
+                        <md-button class="md-fab md-mini md-primary md-fab-top-right" ng-show="isEditMode" ng-click="deleteTabItem(tab,item)" >
+                            <md-icon class="material-icons" >delete forever</md-icon>
+                        </md-button>
+                    </div>
+                </ul>
+            </div>
+
+            <md-fab-speed-dial md-open="isFabOpen" md-direction="up" class="md-scale ">
+                <md-fab-trigger>
+                    <md-button aria-label="menu" class="md-fab md-primary">
+                        <md-icon class="material-icons" >settings</md-icon>
+                    </md-button>
+                </md-fab-trigger>
+
+                <md-fab-actions >
+                    <md-button class="md-fab md-primary" ng-click="getChart()">
+                        <md-icon class="material-icons" >edit</md-icon>
+                    </md-button>
+                    <md-button class="md-fab md-primary" ng-click="deleteCurrentDashboard(tab)">
+                        <md-icon class="material-icons" >delete forever</md-icon>
+                    </md-button>
+                    <md-button class="md-fab md-primary" ng-click="addDashboard()">
+                        <md-icon class="material-icons" >add</md-icon>
+                    </md-button>
+                </md-fab-actions>
+            </md-fab-speed-dial>
+        </md-tab>
+    </md-tabs>
+
+    <!--<div id="one"></div>-->
+    <!--<form ng-submit="addTab(tTitle,tContent)" layout="column" class="md-padding" style="padding-top: 0;">-->
+    <!--<div layout="row" layout-sm="column">-->
+    <!--<div flex="" style="position: relative;">-->
+    <!--<h2 class="md-subhead" style="position: absolute; bottom: 0; left: 0; margin: 0; font-weight: 500; text-transform: uppercase; line-height: 35px; white-space: nowrap;">Add a new Tab:</h2>-->
+    <!--</div>-->
+    <!--<md-input-container>-->
+    <!--<label for="label">Label</label>-->
+    <!--<input type="text" id="label" ng-model="tTitle">-->
+    <!--</md-input-container>-->
+    <!--<md-input-container>-->
+    <!--<label for="content">Content</label>-->
+    <!--<input type="text" id="content" ng-model="tContent">-->
+    <!--</md-input-container>-->
+    <!--<md-button class="add-tab md-primary md-raised" ng-disabled="!tTitle || !tContent" type="submit" style="margin-right: 0;">Add Tab</md-button>-->
+    <!--</div>-->
+    <!--</form>-->
+</div>
+
+
+

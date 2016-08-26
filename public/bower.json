@@ -1,0 +1,28 @@
+{
+  "name": "opserv",
+  "authors": [
+    "Snare92 "
+  ],
+  "description": "frontend for opserv server-monitoring system",
+  "main": "index.html",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "material-design-lite": "^1.2.0",
+    "angular-route": "^1.5.8",
+    "jquery": "^3.1.0",
+    "angular-gridster": "^0.13.14",
+    "angular-material": "^1.1.0",
+    "highcharts": "^4.2.6"
+  },
+  "resolutions": {
+    "angular": "1.5.8"
+  }
+}
