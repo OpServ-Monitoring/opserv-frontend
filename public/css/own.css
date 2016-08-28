@@ -1,6 +1,8 @@
 .my_grid_item{
     background-color: #4e4e4e;
     color: #00b8d4;
+    height: 100%;
+    width: 100%;
 }
 
 md-tabs.main {
@@ -49,12 +51,12 @@ md-fab-speed-dial{
     position: absolute;
     max-height: 45px;
     max-width: 45px;
-    top: 85%;
+    top: 92%;
     left: 95%;
 }
 
 md-icon:hover{
-    color: #00b8d4 !important;
+    color: #242424 !important;
 }
 
 .small-tool-bar{
