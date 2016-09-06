@@ -4,7 +4,7 @@
 app.directive('ktCpuLive', [ 'RestService',  function (Restservice) {
     return {
         restrict: 'E',
-        template: '<highchart id="id" layout-fill="" config="options"></highchart>',
+        template: '<highchart layout-fill="" config="options"></highchart>',
         scope: {
             options: '='
         },

@@ -127,15 +127,17 @@ app.factory('RestService',function($http,$rootScope){
 
     //127.0.0.1:31337/api/data/v1/components/cpu/0/cpu-cores/0/usage?realtime=true
     service.getCPULive = function(){
-        //return $http.get('/api/data/v1/components/cpu/0/cpu-cores/0/usage?realtime=true').then(function successCallback(response) {
-        //    console.log(response);
-        //    $rootScope.$broadcast(EVENT_CPU_LIVE_DATA_RECEIVED, true, response);
-        //}, function errorCallback(response) {
-        //    $rootScope.$broadcast(EVENT_CPU_LIVE_DATA_RECEIVED, false, response);
-        //});
-        var x = (new Date()).getTime(), // current time
-            y = Math.round(Math.random() * 100);
-        $rootScope.$broadcast(EVENT_CPU_LIVE_DATA_RECEIVED, true, {x:x,y:y});
+        return $http.get('/api/data/v1/components/cpu/0/cpu-cores/0/usage?realtime=true').then(function successCallback(response) {
+            console.log(response);
+            var now = new Date().getTime();
+            var data = {x:now,y:response.usage};
+            $rootScope.$broadcast(EVENT_CPU_LIVE_DATA_RECEIVED, true, data);
+        }, function errorCallback(response) {
+            $rootScope.$broadcast(EVENT_CPU_LIVE_DATA_RECEIVED, false, response);
+        });
+        //var x = (new Date()).getTime(), // current time
+        //    y = Math.round(Math.random() * 100);
+        //$rootScope.$broadcast(EVENT_CPU_LIVE_DATA_RECEIVED, true, {x:x,y:y});
     };
 
 
