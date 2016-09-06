@@ -5,7 +5,7 @@
         </div>
         <div flex="80" flex-sm="70" flex-md="70">
             <md-tabs class="no-body" md-selected="selectedIndex" md-center-tabs>
-                <md-tab  ng-repeat="tab in tabs" label="{{tab.title}}">
+                <md-tab  ng-repeat="dashboard in dashboards" label="{{dashboard.title}}">
                 </md-tab>
             </md-tabs>
         </div>
@@ -30,22 +30,22 @@
     </md-toolbar>
 
     <md-tabs class="on-top no-tab-panel main" flex layout="column" layout-fill md-selected="selectedIndex">
-        <md-tab  layout-fill ng-repeat="tab in tabs" label="{{tab.title}}">
+        <md-tab  layout-fill ng-repeat="dashboard in dashboards" label="{{dashboard.title}}">
             <md-toolbar class="small-tool-bar" ng-show="isEditMode">
                 <div class="md-toolbar-tools">
-                    <md-button ng-click="addItem(tab,item)">
+                    <md-button ng-click="addItem(dashboard,item)">
                         <md-icon class="material-icons" >computer</md-icon>
                     </md-button>
-                    <md-button ng-click="addItem(tab,item)">
+                    <md-button ng-click="addItem(dashboard,item)">
                         <md-icon class="material-icons" >memory</md-icon>
                     </md-button>
-                    <md-button ng-click="addItem(tab,item)">
+                    <md-button ng-click="addItem(dashboard,item)">
                         <md-icon class="material-icons" >wifi</md-icon>
                     </md-button>
-                    <md-button ng-click="addItem(tab,item)">
+                    <md-button ng-click="addItem(dashboard,item)">
                         <md-icon class="material-icons" >storage</md-icon>
                     </md-button>
-                    <md-button ng-click="addItem(tab,item)">
+                    <md-button ng-click="addItem(dashboard,item)">
                         <md-icon class="material-icons" >power</md-icon>
                     </md-button>
                     <span flex=""></span>
@@ -54,15 +54,13 @@
                     </md-button>
                 </div>
             </md-toolbar>
-            <div gridster="gridsterOpts">
+            <div ng-if="isLoaded" gridster="gridsterOpts">
                 <ul>
-                    <li em-height-source  md-whiteframe="20" gridster-item="item" ng-repeat="item in tab.items" >
-                        <div id="header">
-                            <md-button class="md-fab md-mini md-fab-top-right" ng-show="isEditMode" ng-click="deleteTabItem(tab,item)" >
-                                <md-icon class="material-icons" >delete forever</md-icon>
-                            </md-button>
-                        </div>
-                        <kt-dashboard-widget layout-fill="" em-height-target options="item.options"></kt-dashboard-widget>
+                    <li kt-watch-size layout-align="row" md-whiteframe="20" gridster-item="widget" ng-repeat="widget in dashboard.widgets" id="{{widget.id}}">
+                        <md-button class="md-fab md-mini md-fab-top-right" ng-show="isEditMode" ng-click="deleteTabItem(dashboard,widget)" >
+                            <md-icon class="material-icons" >delete forever</md-icon>
+                        </md-button>
+                        <kt-dashboard-widget options="widget.displayItem.config" display="widget.displayItem.type" layout-fill></kt-dashboard-widget>
                     </li>
                 </ul>
             </div>
@@ -86,12 +84,11 @@
             <md-button class="md-fab " ng-click="addDashboard()">
                 <md-icon class="material-icons" >add</md-icon>
             </md-button>
+            <md-button class="md-fab " ng-click="save()">
+                <md-icon class="material-icons" >save</md-icon>
+            </md-button>
         </md-fab-actions>
     </md-fab-speed-dial>
-
-
-
-
 
 
     <!--<div id="one"></div>-->

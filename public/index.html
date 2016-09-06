@@ -19,7 +19,7 @@
 <main  layout-fill="" layout="column" ng-view="">
 
 </main>
-<script src="bower_components/angular/angular.min.js" ></script>
+<script src="bower_components/angular/angular.js" ></script>
 <script src="bower_components/angular-aria/angular-aria.js"></script>
 <script src="bower_components/angular-animate/angular-animate.js"></script>
 <script src="bower_components/angular-material/angular-material.js"></script>
@@ -30,7 +30,8 @@
 
 <script src="bower_components/angular-route/angular-route.min.js"></script>
 
-<script src="bower_components/highcharts/highcharts.src.js"></script>
+<script src="bower_components/highcharts/highstock.src.js"></script>
+<script src="bower_components/highcharts-ng/dist/highcharts-ng.js"></script>
 
 <!--app-->
 <script src="app.js"></script>
@@ -38,8 +39,11 @@
 <script src="modules/controller/home_controller.js"></script>
 <!--driectivey-->
 <script src="modules/directives/kt_dashboard_widget.js"></script>
+<script src="modules/directives/kt_cpu_live.js"></script>
 <script src="modules/directives/watch_height.js"></script>
-
+<!--Services-->
+<script src="modules/services/rest_servcie.js"></script>
+<script src="modules/services/json_service.js"></script>
 
 </body>
 

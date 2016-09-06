@@ -1,0 +1,62 @@
+[
+  {
+    "title":"Daschboard One",
+    "widgets":[{
+        "id": 0,
+        "sizeX": 2,
+        "sizeY": 1,
+        "row": 0,
+        "col": 0,
+        "displayItem": {
+          "type": "chart",
+          "config":{
+            "options": {
+              "chart": {
+                "zoomType": "x"
+              },
+              "rangeSelector": {
+                "labelStyle": {
+                  "display": "none"
+                },
+                "buttons": [{
+                  "count": 30,
+                  "type": "second",
+                  "text": "30S"
+                }, {
+                  "count": 1,
+                  "type": "minute",
+                  "text": "1M"
+                }, {
+                  "type": "all",
+                  "text": "All"
+                }],
+                "inputEnabled": false,
+                "selected": 0,
+                "enabled": true
+              },
+              "navigator": {
+                "enabled": true
+              }
+            },
+            "title" : {
+              "text" : "CPU Live Temperature"
+            },
+
+            "exporting": {
+              "enabled": false
+            },
+            "series": [],
+            "loading": false,
+            "useHighStocks": true,
+            "func": "function(chart) { loadData = setInterval(function () { var x = (new Date()).getTime(), y = Math.round(Math.random() * 100); if(chart.series[0].data.length<120){chart.series[0].addPoint([x, y], true, false);}else{chart.series[0].addPoint([x, y], true, true);}}, 1000);"
+          }
+        }
+    },{
+
+    }
+    ]
+  },
+  {
+
+  }
+]
