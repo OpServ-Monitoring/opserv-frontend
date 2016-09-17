@@ -2,11 +2,12 @@
  * Created by Snare on 29.08.16.
  */
 
-app.factory('RestService',function($http,$rootScope){
+app.factory('RestService',function($http,$rootScope,$timeout){
 
 //------------------------------------------------Variablen--------------------------------------------------------------------------------------------------------------------------------------//
     var service = {
         dashboards: [],
+        timerMap: {},
         charts: [],
         securedApiPath : "/api/v2/secured", //TODO in dashboard integrieren
         publicApiPath: "/api/v2/public"
@@ -20,94 +21,12 @@ app.factory('RestService',function($http,$rootScope){
      * @param userId
      */
     service.getDashboards = function(userId){
-        //DUMMY:
 
-        var options = {
-            id:"id",
-            options: {
-                chart: {
-                    zoomType: 'x'
-                },
-
-                rangeSelector: {
-                    labelStyle: {
-                        display: 'none'
-                    },
-                    buttons: [{
-                        count: 30,
-                        type: 'second',
-                        text: '30S'
-                    }, {
-                        count: 1,
-                        type: 'minute',
-                        text: '1M'
-                    }, {
-                        type: 'all',
-                        text: 'All'
-                    }],
-                    inputEnabled: false,
-                    selected: 0,
-                    enabled: true
-                },
-                navigator: {
-                    enabled: true
-                }
-            },
-            title : {
-                text : 'CPU Live Temperature'
-            },
-
-            exporting: {
-                enabled: false
-            },
-            series: [{
-                id:1,
-                data:[]
-            }
-            ],
-            loading: false,
-            useHighStocks: true,
-            func: function(chart) {
-
-                //CALL REST SERVICE
-                //setInterval(function () {
-                //    chart.reflow()
-                //}, 1000);
-
-                service.charts.push(chart);
-                //var x = (new Date()).getTime(), // current time
-                //    y = Math.round(Math.random() * 100);
-                //if (chart.series[0].data.length < 120) {
-                //    chart.series[0].addPoint([x, y], true, false);
-                //} else {
-                //    chart.series[0].addPoint([x, y], true, true);
-                //}
-            }
-        };
-
-        var standardItemsOne = [
-            { id: 0, sizeX: 4, sizeY: 3, row: 0, col: 0, displayItem: {type: CHART_CPU_LIVE, config:options} },
-            //{ id: 1, sizeX: 2, sizeY: 2, row: 0, col: 2, displayItem: {type: 'text', config:options} },
-            //{ id: 2, sizeX: 2, sizeY: 1, row: 0, col: 4, displayItem: {type: 'text', config:{}} },
-            //{ id: 3, sizeX: 2, sizeY: 1, row: 1, col: 0, displayItem: {type: 'text', config:{}} },
-            //{ id: 4, sizeX: 2, sizeY: 2, row: 1, col: 4, displayItem: {type: 'text', config:{}} },
-            { id: 5, sizeX: 4, sizeY: 1, row: 3, col: 0, displayItem: {type: 'text', config:{}} }
-        ];
-        var standardItemstwo =[
-            { id:0, sizeX: 2, sizeY: 1, row: 0, col: 0, displayItem: {type: 'text', config:options} },
-            { id:1, sizeX: 2, sizeY: 2, row: 0, col: 2, displayItem: {type: 'text', config:options} }
-        ];
-
-        var dashboards=[
-            { title: 'First Monitor',widgets:standardItemsOne},
-            { title: 'Second Monitor',widgets:standardItemstwo}
-        ];
-
-        return $http.get('dashboards.json').then(function successCallback(response) {
-            service.dashboards = dashboards;
-            $rootScope.$broadcast(EVENT_DASHBOARDS_RECEIVED, true, dashboards);
+        return $http.get('/dashboards').then(function successCallback(response) {
+            service.dashboards = response.data;
+            $rootScope.$broadcast(EVENT_DASHBOARDS_RECEIVED, true, response.data);
         }, function errorCallback(response) {
-            $rootScope.$broadcast(EVENT_DASHBOARDS_RECEIVED, false, dashboards);
+            $rootScope.$broadcast(EVENT_DASHBOARDS_RECEIVED, false, response.data);
         });
     };
 
@@ -126,20 +45,80 @@ app.factory('RestService',function($http,$rootScope){
     };
 
     //127.0.0.1:31337/api/data/v1/components/cpu/0/cpu-cores/0/usage?realtime=true
-    service.getCPULive = function(){
-        return $http.get('/api/data/v1/components/cpu/0/cpu-cores/0/usage?realtime=true').then(function successCallback(response) {
-            console.log(response);
-            var now = new Date().getTime();
-            var data = {x:now,y:response.usage};
-            $rootScope.$broadcast(EVENT_CPU_LIVE_DATA_RECEIVED, true, data);
-        }, function errorCallback(response) {
-            $rootScope.$broadcast(EVENT_CPU_LIVE_DATA_RECEIVED, false, response);
-        });
-        //var x = (new Date()).getTime(), // current time
-        //    y = Math.round(Math.random() * 100);
-        //$rootScope.$broadcast(EVENT_CPU_LIVE_DATA_RECEIVED, true, {x:x,y:y});
+    service.enableCPUUsageLive = function(baseUrl,samplingRate){
+        if(!service.timerMap['cpuUsageLiveInterval'] || !service.timerMap['cpuUsageLiveInterval'].baseUrl == baseUrl){
+            var cpuLiveInterval = setInterval(function () {
+                $http.get(baseUrl+'/api/data/v1/components/cpu/0/cpu-cores/0/usage?realtime=true').then(function successCallback(response) {
+                    var now = new Date().getTime();
+                    var data = {x:now,y:response.data.usage};
+                    $rootScope.$broadcast(EVENT_CPU_LIVE_DATA_RECEIVED, true, baseUrl, data);
+                }, function errorCallback(response) {
+                    $rootScope.$broadcast(EVENT_CPU_LIVE_DATA_RECEIVED, false, baseUrl, response);
+                });
+            }, samplingRate);
+            service.timerMap['cpuUsageLiveInterval']={interval:cpuLiveInterval,baseUrl:baseUrl,usedBy:1};
+        }else{
+            //nur Anzahl der used By erhöhen
+            service.timerMap['cpuUsageLiveInterval'].usedBy = service.timerMap['cpuUsageLiveInterval'].usedBy+1;
+        }
     };
 
+    service.disableCPUUsageLive = function(baseUrl){
+        if(service.timerMap['cpuUsageLiveInterval'] && service.timerMap['cpuUsageLiveInterval'].baseUrl == baseUrl){
+            //Anzahl der UsedBy verringern
+            service.timerMap['cpuUsageLiveInterval'].usedBy = service.timerMap['cpuUsageLiveInterval'].usedBy-1;
+            //Wenn usedBy == 0 dann Timer Stoppen
+            if(service.timerMap['cpuUsageLiveInterval'].usedBy == 0){
+                var intervall = service.timerMap['cpuUsageLiveInterval'].interval;
+
+                clearInterval(intervall);
+                // aus Timermap entfernen
+                delete service.timerMap['cpuUsageLiveInterval'];
+            }
+        }else{
+            //nix, kein Timer zum Stoppen vorhanden
+        }
+    };
+
+    service.updateSamplingRateOfCPUUsageLive = function(baseUrl,newSamplingRate){
+        //TODO anpassen und abstrahieren
+        if(service.timerMap['cpuUsageLiveInterval'] && service.timerMap['cpuUsageLiveInterval'].baseUrl == baseUrl){
+            //Anzahl der UsedBy ermitteln
+            var countCurrentIntervals = service.timerMap['cpuUsageLiveInterval'].usedBy;
+
+            //Tintervall stoppem
+            var intervall = service.timerMap['cpuUsageLiveInterval'].interval;
+            clearInterval(intervall);
+            delete service.timerMap['cpuUsageLiveInterval'];
+
+
+            //neuen Intervall erzeugen
+            var cpuLiveInterval = setInterval(function () {
+                $http.get(baseUrl+'/api/data/v1/components/cpu/0/cpu-cores/0/usage?realtime=true').then(function successCallback(response) {
+                    var now = new Date().getTime();
+                    var data = {x:now,y:response.data.usage};
+                    $rootScope.$broadcast(EVENT_CPU_LIVE_DATA_RECEIVED, true, baseUrl, data);
+                }, function errorCallback(response) {
+                    $rootScope.$broadcast(EVENT_CPU_LIVE_DATA_RECEIVED, false, baseUrl, response);
+                });
+            }, newSamplingRate);
+
+            service.timerMap['cpuUsageLiveInterval']={interval:cpuLiveInterval,baseUrl:baseUrl,usedBy:countCurrentIntervals};
+
+        }else{
+            //nix, kein Intervall zum ändern vorhanden
+        }
+    };
+
+
+
+    service.getCPUUsageHistory = function(baseUrl){
+        $http.get(baseUrl+'/api/data/v1/components/cpu/0/cpu-cores/0/usage?history=true').then(function successCallback(response) {
+            $rootScope.$broadcast(EVENT_CPU_HISTORY_DATA_RECEIVED, true, baseUrl, response.data);
+        }, function errorCallback(response) {
+            $rootScope.$broadcast(EVENT_CPU_HISTORY_DATA_RECEIVED, false, baseUrl, response.data);
+        });
+    };
 
     return service;
 });

@@ -36,7 +36,7 @@ md-tabs.no-body md-tab-content{
 }
 
 md-tabs.md-default-theme .md-tab, md-tabs .md-tab{
-    color: #FFFFFF;
+    color: rgba(255,255,255,0.87);
 }
 
 md-tabs.md-default-theme .md-tab.md-active, md-tabs .md-tab.md-active, md-tabs.md-default-theme .md-tab.md-active md-icon, md-tabs .md-tab.md-active md-icon, md-tabs.md-default-theme .md-tab.md-focused, md-tabs .md-tab.md-focused, md-tabs.md-default-theme .md-tab.md-focused md-icon, md-tabs .md-tab.md-focused md-icon{
@@ -47,25 +47,79 @@ md-tabs.no-tab-panel md-tabs-wrapper{
     display:none
 }
 
-md-fab-speed-dial{
-    position: absolute;
-    max-height: 45px;
-    max-width: 45px;
-    top: 92%;
-    left: 95%;
+md-toolbar.md-tall {
+    height: 100px;
+    min-height: 100px;
+    max-height: 100px;
 }
 
-md-icon:hover{
-    color: #242424 !important;
+.vertical-divider {
+    border-top-width: 0;
+    border-right-width: 1px;
+    border-right-style: solid;
+    height: 60%;
 }
 
-.small-tool-bar{
-    max-width: 50%;
-    max-height: 30px;
-    left: 25%;
+md-sidenav,
+md-sidenav.md-locked-open,
+md-sidenav.md-closed.md-locked-open-add-active,
+md-sidenav md-content{
+    min-width: 100px !important;
+    /*width: 85vw !important;*/
+    max-width: 100px !important;
     background-color: #444444 !important;
 }
 
+md-sidenav md-content button md-icon{
+    color: rgba(255,255,255,0.87);
+}
+
+md-sidenav md-content button{
+    color: rgba(255,255,255,0.87) !important;
+}
+
+md-divider{
+    background-color: rgba(255,255,255,0.87);
+}
+
+/*.md-fab md-icon:hover{*/
+    /*color: #242424 !important;*/
+/*}*/
+
+/*button md-icon:hover{*/
+    /*color: #00b8d4 !important;*/
+/*}*/
+
+/*button:hover{*/
+    /*color: #00b8d4 !important;*/
+/*}*/
+
 .blackground {
     background-color: #242424;
+}
+
+.blackground-light{
+    background-color: #444444 !important;
+    color: rgba(255,255,255,0.87);
+}
+
+*, body, button, input, textarea, select {
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+
+#vericalToolBar {
+    height: 100%;
+    background-color: #444444 !important;
+    width: 50px;
+}
+
+#vericalToolBar md-icon {
+    color: rgba(255,255,255,0.87);
+}
+
+#toolBarTitle {
+    writing-mode: tb-rl;
+    color: rgba(255,255,255,0.87);
 }

@@ -1,15 +1,16 @@
 /**
  * Created by Snare on 24.08.16.
  */
-app.controller('Ctrl',function($scope,RestService,JSONService,$mdDialog,$timeout){
+app.controller('DashboardCtrl',function($scope, $rootScope, RestService,$mdSidenav,JSONService,$mdDialog,$timeout){
     var scope = $scope;
+    var rootScope = $rootScope;
 
     scope.isFabOpen = false;
     scope.isEditMode = false;
     //scope.__height = 0;
 
     scope.gridsterOpts = {
-        columns: 6, // the width of the grid, in columns
+        columns: 30, // the width of the grid, in columns
         pushing: false, // whether to push other items out of the way on move or resize
         floating: false, // whether to automatically float items up so they stack (you can temporarily disable if you are adding unsorted items with ng-repeat)
         swapping: false, // whether or not to have items of the same size switch places instead of pushing down if they are the same size
@@ -23,7 +24,7 @@ app.controller('Ctrl',function($scope,RestService,JSONService,$mdDialog,$timeout
         mobileModeEnabled: true, // whether or not to toggle mobile mode when screen width is less than mobileBreakPoint
         minColumns: 1, // the minimum columns the grid must have
         minRows: 2, // the minimum height of the grid, in rows
-        maxRows: 10,
+        maxRows: 100,
         defaultSizeX: 2, // the default width of a gridster item, if not specifed
         defaultSizeY: 1, // the default height of a gridster item, if not specified
         //minSizeX: 20, // minimum column width of an item
@@ -50,28 +51,13 @@ app.controller('Ctrl',function($scope,RestService,JSONService,$mdDialog,$timeout
     RestService.getDashboards(0);
 
     scope.$on(EVENT_DASHBOARDS_RECEIVED,function(event,success,data){
-        scope.dashboards=data;
+        rootScope.dashboards=data;
         scope.isLoaded = true;
     });
 
-    //scope.$on(EVENT_CPU_LIVE_DATA_RECEIVED,function(event,success,data){
-    //    console.log("angekommen");
-    //    scope.$broadcast("test",success,data);
-    //
-    //});
-
-    scope.$on('item-resize',function(event,element){
-        if(Highcharts.charts[element['id']]){
-           // console.log("Änderung für chart nummer:",element['id']); //TODO kann entfern werden, zeigt an welches Diagramm in größe verändert wird
-           // todo highcharts mit id versehen un darüber ansprechen
-            Highcharts.charts[element['id']].reflow();
-        }
+    scope.$on("delete-widget", function (event, dashboardIndex, widgetIndex) {
+        rootScope.dashboards[dashboardIndex].widgets.splice(widgetIndex,1);
     });
-
-    scope.save = function(){
-        console.log(scope.dashboards);
-        RestService.saveDashboards(scope.dashboards);
-    };
 
     var originatorEv;
     scope.openMenu = function($mdOpenMenu, ev) {
@@ -80,26 +66,22 @@ app.controller('Ctrl',function($scope,RestService,JSONService,$mdDialog,$timeout
     };
 
     scope.addDashboard = function(){
-        scope.tabs.push({
-            title:'two',
-            standardItems:standardItemstwo
-        })
+        console.log("todo implement")
     };
 
     scope.deleteCurrentDashboard = function(tab){
-        var index = scope.tabs.indexOf(tab);
-        scope.tabs.splice(index,1);
+        var index = rootScope.dashboards.indexOf(tab);
+        rootScope.dashboards.splice(index,1);
     };
 
-    scope.addItem = function(tab){
-        var tabIndex = scope.tabs.indexOf(tab);
-        scope.tabs[tabIndex].items.push({ sizeX: 2, sizeY: 2, row: 0, col: 0 });
+    scope.save = function(){
+        console.log(scope.dashboards);
+        RestService.saveDashboards(scope.dashboards);
     };
 
-    scope.deleteTabItem = function(tab,item){
-        var tabIndex = scope.tabs.indexOf(tab);
-        var itemIndex = scope.tabs[tabIndex].items.indexOf(item);
-        scope.tabs[tabIndex].items.splice(itemIndex,1);
+    scope.addItem = function(dashboardIndex){
+        //var dashboardIndex = rootScope.dashboards.indexOf(dashboard);
+        rootScope.dashboards[dashboardIndex].widgets.push({ sizeX: 2, sizeY: 2, row: 0, col: 0 });
     };
 
     scope.toggleEditMode = function(){
@@ -110,18 +92,21 @@ app.controller('Ctrl',function($scope,RestService,JSONService,$mdDialog,$timeout
             scope.gridsterOpts.swapping = true;
             scope.gridsterOpts.resizable.enabled = true;
             scope.gridsterOpts.draggable.enabled = true;
+            rootScope.$broadcast('toggleEditMode',true);
         }else{
             scope.gridsterOpts.pushing = false;
             scope.gridsterOpts.floating = false;
             scope.gridsterOpts.swapping = false;
             scope.gridsterOpts.resizable.enabled = false;
             scope.gridsterOpts.draggable.enabled = false;
+            rootScope.$broadcast('toggleEditMode',false);
         }
         scope.isEditMode = !scope.isEditMode;
+        $mdSidenav('left').toggle();
     };
 
 
-
-
-
+    scope.toggleLeft = function () {
+        $mdSidenav('left').toggle();
+    }
 });

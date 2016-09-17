@@ -20,7 +20,8 @@
     "angular-gridster": "^0.13.14",
     "angular-material": "^1.1.0",
     "highcharts": "^4.2.6",
-    "highcharts-ng": "^0.0.12"
+    "highcharts-ng": "^0.0.12",
+    "angular-viewport-watch": "^0.1.4"
   },
   "resolutions": {
     "angular": "1.5.8"

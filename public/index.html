@@ -23,6 +23,8 @@
 <script src="bower_components/angular-aria/angular-aria.js"></script>
 <script src="bower_components/angular-animate/angular-animate.js"></script>
 <script src="bower_components/angular-material/angular-material.js"></script>
+<script src="bower_components/scrollMonitor/scrollMonitor.js"></script>
+<script src="bower_components/angular-viewport-watch/angular-viewport-watch.js"></script>
 
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
 <script src="bower_components/javascript-detect-element-resize/jquery.resize.js"></script>
@@ -31,20 +33,29 @@
 <script src="bower_components/angular-route/angular-route.min.js"></script>
 
 <script src="bower_components/highcharts/highstock.src.js"></script>
+<script src="bower_components/highcharts/modules/exporting.js"></script>
 <script src="bower_components/highcharts-ng/dist/highcharts-ng.js"></script>
 
 <!--app-->
 <script src="app.js"></script>
 <!--controller-->
-<script src="modules/controller/home_controller.js"></script>
-<!--driectivey-->
+<script src="modules/controller/dashboards_controller.js"></script>
+<!--directive-->
 <script src="modules/directives/kt_dashboard_widget.js"></script>
 <script src="modules/directives/kt_cpu_live.js"></script>
-<script src="modules/directives/watch_height.js"></script>
+<script src="modules/directives/watch_size.js"></script>
+<script src="modules/directives/kt_dashboards_toolbar.js"></script>
+<script src="modules/directives/kt_dashboard_edit_toolbar.js"></script>
+<script src="modules/directives/kt_dashboard_fab.js"></script>
 <!--Services-->
 <script src="modules/services/rest_servcie.js"></script>
 <script src="modules/services/json_service.js"></script>
 
+
+
+
+<!--MOCKUP-->
+<script src="bower_components/angular-mocks/angular-mocks.js"></script>
 </body>
 
 </html>
