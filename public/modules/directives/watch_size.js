@@ -12,10 +12,9 @@ app.directive( 'ktWatchSize', ['$rootScope',function(rootScope) {
                 if(scope.__height != element[0].offsetHeight ){
                     if(element[0].children[0]
                         && element[0].children[0].children[0]
-                        && element[0].children[0].children[0].children[0]
-                        && element[0].children[0].children[0].children[0].children[0])
+                        && element[0].children[0].children[0].children[0])
                     {
-                        container = element[0].children[0].children[0].children[0].children[0];
+                        container = element[0].children[0].children[0].children[0];
                         rootScope.$broadcast('item-resize',container,element);
                         scope.__height = element[0].offsetHeight;
                     }
@@ -23,15 +22,39 @@ app.directive( 'ktWatchSize', ['$rootScope',function(rootScope) {
                 if(scope.__width != element[0].offsetWidth){
                     if(element[0].children[0]
                         && element[0].children[0].children[0]
-                        && element[0].children[0].children[0].children[0]
-                        && element[0].children[0].children[0].children[0].children[0])
+                        && element[0].children[0].children[0].children[0])
                     {
-                        container = element[0].children[0].children[0].children[0].children[0];
+                        container = element[0].children[0].children[0].children[0];
                         rootScope.$broadcast('item-resize',container,element);
                         scope.__width = element[0].offsetWidth;
                     }
 
                 }
+
+
+                //if(scope.__height != element[0].offsetHeight ){
+                //    if(element[0].children[0]
+                //        && element[0].children[0].children[0]
+                //        && element[0].children[0].children[0].children[0]
+                //        && element[0].children[0].children[0].children[0].children[0])
+                //    {
+                //        container = element[0].children[0].children[0].children[0].children[0];
+                //        rootScope.$broadcast('item-resize',container,element);
+                //        scope.__height = element[0].offsetHeight;
+                //    }
+                //}
+                //if(scope.__width != element[0].offsetWidth){
+                //    if(element[0].children[0]
+                //        && element[0].children[0].children[0]
+                //        && element[0].children[0].children[0].children[0]
+                //        && element[0].children[0].children[0].children[0].children[0])
+                //    {
+                //        container = element[0].children[0].children[0].children[0].children[0];
+                //        rootScope.$broadcast('item-resize',container,element);
+                //        scope.__width = element[0].offsetWidth;
+                //    }
+                //
+                //}
             });
         }
     }

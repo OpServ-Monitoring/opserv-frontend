@@ -5,10 +5,10 @@
     width: 100%;
 }
 
-md-tabs.main {
+body {
     background: url("../images/Dark_background_1920x1080.png") center top no-repeat;
     background-size: cover;
-    margin-right: -18px; }
+}
 
 md-tabs.on-top md-tabs-content-wrapper{
      top:1px;
@@ -122,4 +122,13 @@ md-divider{
 #toolBarTitle {
     writing-mode: tb-rl;
     color: rgba(255,255,255,0.87);
+}
+
+
+.top-right{
+    top: 20px;
+    right: 20px;
+    bottom: auto;
+    left: auto;
+    position: absolute;
 }

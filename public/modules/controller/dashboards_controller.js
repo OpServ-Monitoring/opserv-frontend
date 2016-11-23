@@ -1,13 +1,13 @@
 /**
  * Created by Snare on 24.08.16.
  */
-app.controller('DashboardCtrl',function($scope, $rootScope, RestService,$mdSidenav,JSONService,$mdDialog,$timeout){
+app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSidenav, $mdDialog, $timeout){
     var scope = $scope;
     var rootScope = $rootScope;
 
     scope.isFabOpen = false;
     scope.isEditMode = false;
-    //scope.__height = 0;
+
 
     scope.gridsterOpts = {
         columns: 30, // the width of the grid, in columns
@@ -33,7 +33,7 @@ app.controller('DashboardCtrl',function($scope, $rootScope, RestService,$mdSiden
         //maxSizeY: 40 // maximum row height of an item
         resizable: {
             enabled: false,
-            handles: ['n', 'e', 's', 'w', 'ne', 'se', 'sw', 'nw'],
+            handles: ['n', 'e', 's', 'w', 'ne', 'se', 'sw', 'nw']
             //start: function(event, $element, widget) {}, // optional callback fired when resize is started,
             //resize: function(event, $element, widget) {}, // optional callback fired when item is resized,
             //stop: function(event, $element, widget) {} // optional callback fired when item is finished resizing
@@ -48,7 +48,7 @@ app.controller('DashboardCtrl',function($scope, $rootScope, RestService,$mdSiden
     };
 
 
-    RestService.getDashboards(0);
+    prefService.getDashboards(0);
 
     scope.$on(EVENT_DASHBOARDS_RECEIVED,function(event,success,data){
         rootScope.dashboards=data;
@@ -76,12 +76,27 @@ app.controller('DashboardCtrl',function($scope, $rootScope, RestService,$mdSiden
 
     scope.save = function(){
         console.log(scope.dashboards);
-        RestService.saveDashboards(scope.dashboards);
+        prefService.saveDashboards(scope.dashboards);
     };
 
-    scope.addItem = function(dashboardIndex){
-        //var dashboardIndex = rootScope.dashboards.indexOf(dashboard);
-        rootScope.dashboards[dashboardIndex].widgets.push({ sizeX: 2, sizeY: 2, row: 0, col: 0 });
+    scope.addWidget = function(ci, id, cat){
+        var widget = {
+            sizeX: 15,
+            sizeY: 10,
+            row: 0,
+            col: 0,
+            displayItem: {
+                ci: ci,
+                id: id,
+                cat: cat,
+                category: CPU_USAGE,
+                options: {
+                    realtime: true,
+                    displayAsChart:true
+                }
+            }
+        };
+        rootScope.dashboards[scope.selectedDashboard].widgets.push(widget);
     };
 
     scope.toggleEditMode = function(){

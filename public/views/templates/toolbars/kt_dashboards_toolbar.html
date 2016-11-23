@@ -3,24 +3,24 @@
     <div layout="row" >
         <h3>OpServ</h3>
         <span flex=""></span>
-            <span>
-                <md-menu  md-position-mode="target-right target" md-offset="-20 40">
-                    <md-button ng-click="openMenu($mdOpenMenu, $event)">
-                        Account
-                        <md-icon style="margin-bottom: 8px" class="material-icons">person</md-icon>
-                    </md-button>
-                    <md-menu-content md-whiteframe="20" class="blackground" width="4">
-                        <md-menu-item ng-repeat="item in [1, 2, 3]">
-                            <md-button ng-click="">
-                                <div layout="row" flex="">
-                                    <p flex="">Option {{item}}</p>
-                                </div>
-                            </md-button>
-                        </md-menu-item>
-                        <!--<md-menu-divider></md-menu-divider>-->
-                    </md-menu-content>
-                </md-menu>
-            </span>
+        <span>
+            <md-menu  md-position-mode="target-right target" md-offset="-20 40">
+                <md-button ng-click="openMenu($mdOpenMenu, $event)">
+                    Account
+                    <md-icon style="margin-bottom: 8px" class="material-icons">person</md-icon>
+                </md-button>
+                <md-menu-content md-whiteframe="20" class="blackground" width="4">
+                    <md-menu-item ng-repeat="item in [1, 2, 3]">
+                        <md-button ng-click="">
+                            <div layout="row" flex="">
+                                <p flex="">Option {{item}}</p>
+                            </div>
+                        </md-button>
+                    </md-menu-item>
+                    <!--<md-menu-divider></md-menu-divider>-->
+                </md-menu-content>
+            </md-menu>
+        </span>
     </div>
     <div layout-align="center" class="md-toolbar-tools">
         <div flex="90">
