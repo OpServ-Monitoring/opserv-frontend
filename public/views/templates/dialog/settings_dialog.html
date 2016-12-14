@@ -14,25 +14,22 @@
             <div class="md-dialog-content">
                 <md-input-container>
                     <label>Title</label>
-                    <input ng-model="title">
+                    <input ng-model="title" >
                 </md-input-container>
                 <md-input-container class="md-block" flex-gt-sm>
                     <label>Typ</label>
-                    <md-select ng-model="selectedType" ng-model-options="{trackBy: '$value.text'}">
-                        <md-option ng-repeat="type in types" ng-value="type">
-                            {{type.text}}
+                    <md-select class="blackground-light" ng-model="currentMode" ng-model-options="{trackBy: '$value.text'}">
+                        <md-option ng-repeat="mode in modes" ng-value="mode">
+                            {{mode.text}}
                         </md-option>
                     </md-select>
                 </md-input-container>
-                <label>Abtastrate</label>
-
+                <span>Abtastrate</span>
                 <md-slider-container>
-
-                    <md-slider flex min="500" max="10000" ng-model="samplingRate" aria-label="sampling-rate" id="sampling-rate-slider">
+                    <md-slider flex min="500" max="10000" ng-model="samplingRateLive" aria-label="sampling-rate" id="sampling-rate-slider">
                     </md-slider>
-
                     <md-input-container>
-                        <input flex type="number" ng-model="samplingRate" aria-label="sampling-rate" aria-controls="sampling-rate-slider">
+                        <input flex type="number" ng-model="samplingRateLive" aria-label="sampling-rate" aria-controls="sampling-rate-slider">
                     </md-input-container>
                 </md-slider-container>
             </div>

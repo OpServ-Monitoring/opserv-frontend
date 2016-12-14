@@ -22,27 +22,14 @@ app.factory('dataService',function($http, $rootScope, $timeout){
             createCiLiveInterval(baseUrl, ci, id, category, samplingRate, intervalName);
         }else{
             increaseIntervalUsedBy(intervalName);
+            service.updateSamplingRateOfCiLiveTimer(baseUrl, ci, id, category, samplingRate)
         }
     };
-
-    //service.enableCPUUsageLive = function(baseUrl,cpuId,samplingRate){
-    //    var intervalName = CPU_LIVE_USAGE_TIMER+cpuId;
-    //    if(!isAlreadyIntervalForBaseUrl(intervalName, baseUrl)){
-    //        createCpuLiveUsageInterval(baseUrl, cpuId, samplingRate, intervalName);
-    //    }else{
-    //        increaseIntervalUsedBy(intervalName);
-    //    }
-    //};
 
     service.disableCiLiveTimer = function(baseUrl, ci, id, category){
         var intervalName = ci+id+category;
         disableInterval(intervalName, baseUrl);
     };
-
-    //service.disableCPUUsageLive = function(baseUrl,cpuId){
-    //    var intervalName = CPU_LIVE_USAGE_TIMER+cpuId;
-    //    disableInterval(intervalName, baseUrl);
-    //};
 
     service.updateSamplingRateOfCiLiveTimer = function(baseUrl, ci, id, category, newSamplingRate){
         var intervalName = ci+id+category;
@@ -54,77 +41,70 @@ app.factory('dataService',function($http, $rootScope, $timeout){
         }
     };
 
-    //service.updateSamplingRateOfCPUUsageLive = function(baseUrl,cpuId,newSamplingRate){
-    //    var intervalName = CPU_LIVE_USAGE_TIMER+cpuId;
-    //    if(isAlreadyIntervalForBaseUrl(intervalName, baseUrl)){
-    //        var countCurrentIntervals = service.intervalMap[intervalName].usedBy;
-    //        stopInterval(intervalName);
-    //        createCpuLiveUsageInterval(baseUrl, cpuId, newSamplingRate, intervalName);
-    //        setIntervalUsedByAttribute(intervalName,countCurrentIntervals);
-    //    }
-    //};
+    function parseHistoryValues(values) {
+        var minArray=[];
+        var maxArray=[];
+        var avgArray=[];
 
+        angular.forEach(values,function (object) {
+            minArray.push([object.timestamp, object.min]);
+            maxArray.push([object.timestamp, object.max]);
+            avgArray.push([object.timestamp, object.avg])
+        });
 
-    //service.getCPUUsageHistory = function(baseUrl,cpuId){
-    //    $http.get(baseUrl+'/api/data/v1/cpus/'+cpuId+'/usage').then(function successCallback(response) {
-    //        $rootScope.$broadcast(EVENT_CI_HISTORY_DATA_RECEIVED, true, baseUrl, cpuId, response.data.values);
-    //    }, function errorCallback(response) {
-    //        $rootScope.$broadcast(EVENT_CI_HISTORY_DATA_RECEIVED, false, baseUrl, cpuId, response.data.values);
-    //    });
-    //};
+        return [{name:"min-values",data:minArray},{name:"avg-values",color:"#d966ff",data:avgArray},{name:"max-values",color:"#ff471a",data:maxArray}]
+    }
 
     service.getCiHistoryData = function(baseUrl, ci, id, category){
         $http.get(baseUrl+'/api/data/v1/'+ci+'/'+id+'/'+category).then(function successCallback(response) {
-            $rootScope.$broadcast(EVENT_CI_HISTORY_DATA_RECEIVED, true, baseUrl, ci, id, category, response.data.values);
+            var parsed_values = parseHistoryValues(response.data.data.values);
+            $rootScope.$broadcast(EVENT_CI_HISTORY_DATA_RECEIVED, true, baseUrl, ci, id, category, parsed_values);
         }, function errorCallback(response) {
-            $rootScope.$broadcast(EVENT_CI_HISTORY_DATA_RECEIVED, false, baseUrl, ci, id, category, response.data.values);
+            $rootScope.$broadcast(EVENT_CI_HISTORY_DATA_RECEIVED, false, baseUrl, ci, id, category, response.data.data.values);
         });
     };
 
-    //function createCpuLiveUsageInterval(baseUrl, cpuId, samplingRate, intervalName) {
-    //    var cpuLiveInterval = setInterval(function () {
-    //        $http.get(baseUrl + '/api/data/v1/cpus/' + cpuId + '/usage?realtime=true').then(function successCallback(response) {
-    //            var now = new Date().getTime();
-    //            var data = {x: now, y: response.data.usage};
-    //            $rootScope.$broadcast(EVENT_CI_LIVE_DATA_RECEIVED, true, baseUrl, cpuId, data);
-    //        }, function errorCallback(response) {
-    //            $rootScope.$broadcast(EVENT_CI_LIVE_DATA_RECEIVED, false, baseUrl, cpuId, response);
-    //        });
-    //    }, samplingRate);
-    //    service.intervalMap[intervalName] = {interval: cpuLiveInterval, baseUrl: baseUrl, usedBy: 1};
-    //}
-
-
     function createCiLiveInterval(baseUrl, ci, id, category, samplingRate, intervalName){
-        var liveInterval = setInterval(function () {
-            $http.get(baseUrl + '/api/data/v1/'+ci+'/' + id + '/'+category+'?realtime=true').then(function successCallback(response) {
-                var now = new Date().getTime();
-                var data = {x: now, y: response.data.usage};
-                $rootScope.$broadcast(EVENT_CI_LIVE_DATA_RECEIVED, true, baseUrl, ci, id, category, data);
+        console.log(samplingRate);
+        $http.put(baseUrl + '/api/data/v1/'+ci+'/'+id+'/'+category,{gathering_rate:samplingRate}).then(function onSuccess(response) {
+            var liveInterval = setInterval(function () {
+                $http.get(baseUrl + '/api/data/v1/'+ci+'/'+id+'/'+category+'?realtime=true').then(function successCallback(response) {
+                    $rootScope.$broadcast(EVENT_CI_LIVE_DATA_RECEIVED, true, baseUrl, ci, id, category, response.data.data);
+                }, function errorCallback(response) {
+                    $rootScope.$broadcast(EVENT_CI_LIVE_DATA_RECEIVED, false, baseUrl, ci, id, category, response.data.data);
+                });
+            }, samplingRate);
+            service.intervalMap[intervalName] = {interval: liveInterval, baseUrl: baseUrl, usedBy: 1};
+        }, function onError(response) {
+            console.log("Error while setting gathering Rate of: ", ci,id,category,"rate: ",samplingRate);
+            //todo anpassen
+        });
 
-            }, function errorCallback(response) {
-                $rootScope.$broadcast(EVENT_CI_LIVE_DATA_RECEIVED, false, baseUrl, ci, id, category, response);
-            });
-        }, samplingRate);
-        service.intervalMap[intervalName] = {interval: liveInterval, baseUrl: baseUrl, usedBy: 1};
     }
 
-//------------------------------------------------ CPUs Info --------------------------------------------------------------------------------------------------------------------------------------//
+//------------------------------------------------ CI Info --------------------------------------------------------------------------------------------------------------------------------------//
 
-    function parseCis(response, callback) {
-        callback(null,response.data)
+    function getValuesFromChildrenLinks(childrenLinks) {
+        var ids =[];
+        if (childrenLinks){
+            angular.forEach(childrenLinks,function (link) {
+                var childrenAdress = link.href;
+                var cutInArray = childrenAdress.split("/");
+                var lastItem = cutInArray[cutInArray.length-1];
+                ids.push(lastItem)
+            });
+            console.log(ids);
+            return ids;
+        }else{
+            return [];
+        }
     }
 
     service.getCiIds = function(ciName,baseUrl){
         return $http.get(baseUrl+'/api/data/v1/'+ciName).then(function successCallback(response) {
             $timeout(function() {
-                parseCis(response,function(err,res){
-                    if(!err){
-                        $rootScope.$broadcast("ci_ids_received", true, ciName, res);
-                    }else{
-                        console.log(err)
-                    }
-                });
+                var ids = getValuesFromChildrenLinks(response.data.links.children);
+                $rootScope.$broadcast("ci_ids_received", true, ciName, ids);
             }, 3000);
            // $rootScope.$broadcast("ci_info_received", true , response);
         }, function errorCallback(response) {
@@ -132,20 +112,11 @@ app.factory('dataService',function($http, $rootScope, $timeout){
         });
     };
 
-    function parseCats(response, callback) {
-        callback(null,response.data)
-    }
-
     service.getCiCats = function(ciName,ciId, baseUrl){
         return $http.get(baseUrl+'/api/data/v1/'+ciName+'/'+ciId).then(function successCallback(response) {
             $timeout(function() {
-                parseCats(response,function(err,res){
-                    if(!err){
-                        $rootScope.$broadcast("ci_cats_received", true, ciName, res);
-                    }else{
-                        console.log(err)
-                    }
-                });
+                var cats = getValuesFromChildrenLinks(response.data.links.children);
+                $rootScope.$broadcast("ci_cats_received", true, ciName, cats);
             }, 3000);
             // $rootScope.$broadcast("ci_info_received", true , response);
         }, function errorCallback(response) {
@@ -156,8 +127,6 @@ app.factory('dataService',function($http, $rootScope, $timeout){
     /**
      * alle Cpus über children objekte
      * String hinter letzer "/" ist die Bezeichnung der CPU
-     */
-
     /**
      * {
         links:{
@@ -197,8 +166,6 @@ app.factory('dataService',function($http, $rootScope, $timeout){
         }
       */
 
-
-
     function disableInterval(intervalName, baseUrl) {
         if (isAlreadyIntervalForBaseUrl(intervalName, baseUrl)) {
             decreaseIntervalUsedByCounter(intervalName);
@@ -219,7 +186,7 @@ app.factory('dataService',function($http, $rootScope, $timeout){
         delete service.intervalMap[intervalName];
     }
 
-    function setIntervalUsedByAttribute(intervalName, countCurrentIntervals) {
+    function setIntervalUsedByAttribute(intervalName, countCurrentIntervals ) {
         service.intervalMap[intervalName].usedBy = countCurrentIntervals;
     }
 

@@ -86,16 +86,15 @@ app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSide
             row: 0,
             col: 0,
             displayItem: {
-                ci: ci,
-                id: id,
-                cat: cat,
-                category: CPU_USAGE,
-                options: {
-                    realtime: true,
-                    displayAsChart:true
-                }
+                ci: ci.label,
+                id: id.label,
+                category: cat.label,
+                title: ci.label+" "+id.label+" "+cat.label+" - Live",
+                realtime: true,
+                displayAsChart:true
             }
         };
+        //TODO -Live anpassen, je nachdem welches CI es ist
         rootScope.dashboards[scope.selectedDashboard].widgets.push(widget);
     };
 

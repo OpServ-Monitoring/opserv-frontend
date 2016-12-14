@@ -7,7 +7,7 @@
         <div ng-cloak ng-if="isLoaded" gridster="gridsterOpts" >
             <ul>
                 <li ng-cloak kt-watch-size layout-align="row" md-whiteframe="20" gridster-item="widget" ng-repeat="widget in dashboard.widgets">
-                    <kt-dashboard-widget ng-cloak displayitem="widget.displayItem" widgetindex="$index" dashboardindex="$parent.$parent.$index" baseurl="dashboard.baseUrl" category="widget.displayItem.category" layout-fill></kt-dashboard-widget>
+                    <kt-dashboard-widget ng-cloak displayitem="widget.displayItem" widgetindex="$index" dashboardindex="$parent.$parent.$index" baseurl="dashboard.baseUrl" layout-fill></kt-dashboard-widget>
                 </li>
             </ul>
         </div>

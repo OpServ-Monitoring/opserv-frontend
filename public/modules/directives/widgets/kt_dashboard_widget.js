@@ -6,7 +6,6 @@ app.directive('ktDashboardWidget',[ 'dataService',function (dataService) {
         restrict: 'E',
         templateUrl: 'views/templates/widgets/kt_dashboard_widget.html',
         scope: {
-            category: '=',
             baseurl: '=',
             widgetindex: '=',
             dashboardindex: '=',
@@ -17,8 +16,6 @@ app.directive('ktDashboardWidget',[ 'dataService',function (dataService) {
 
             var scope = $scope;
 
-            console.log(scope.displayitem);
-
             scope.openSettings = function () {
                 $mdDialog.show({
                     controller: DialogSettingsContoller,
@@ -27,17 +24,15 @@ app.directive('ktDashboardWidget',[ 'dataService',function (dataService) {
                     clickOutsideToClose: true,
                     fullscreen: true // Only for -xs, -sm breakpoints.
                 }).then(function(answer) {
-
-                    scope.selectedType = answer.newType;
-                    scope.config.title.text = answer.newTitle;
+                    scope.currentMode = answer.newMode;
+                    scope.displayitem.title = answer.newTitle;
                     // catch wrong user input
-                    if(answer.newSamplingRateLive >= 500 && answer.newSamplingRateLive <= 10000){
+                    if( answer.newSamplingRateLive >= 500 && answer.newSamplingRateLive <= 10000){
                         scope.samplingRateLive = answer.newSamplingRateLive;
-                        dataService.updateSamplingRateOfCPUUsageLive(scope.baseurl,scope.cpuId,scope.samplingRateLive);
                     }else{
                         scope.samplingRateLive = 1000;
-                        dataService.updateSamplingRateOfCPUUsageLive(scope.baseurl,scope.cpuId,scope.samplingRateLive);
                     }
+
                 }, function() {});
             };
 
@@ -49,13 +44,16 @@ app.directive('ktDashboardWidget',[ 'dataService',function (dataService) {
                 scope.isEditing = isEditing;
             });
 
-            scope.types =[
-                {text:'Live',title:'CPU Usage - Live'},
-                {text:'History',title:'CPU Usage - History'}
+            scope.modes =[
+                {text:"Live"},
+                {text:"History"}
             ];
 
-            scope.selectedType = {};
-            selectTypeFromGivenOptions();
+            if(scope.displayitem.realtime == true){
+                scope.currentMode = scope.modes[0]
+            }else{
+                scope.currentMode = scope.modes[1]
+            }
 
             scope.displayAsChart = scope.displayitem.displayAsChart;
 
@@ -163,7 +161,7 @@ app.directive('ktDashboardWidget',[ 'dataService',function (dataService) {
                     }
                 },
                 title : {
-                    text : scope.selectedType.title
+                    text : ""
                 },
                 series: [],
                 loading: true,
@@ -175,11 +173,11 @@ app.directive('ktDashboardWidget',[ 'dataService',function (dataService) {
 
             //-------------------------- Listener -------------------------------------------------------------------------
 
-            scope.$watch('selectedType',function(newValue, oldValue){
+            scope.$watch('currentMode',function(newMode, oldMode){
                 clearData();
                 toggleLoading(true);
-                configureHowToLoadNewData(newValue,oldValue);
-                setTitle(newValue.title);
+                configureHowToLoadNewData(newMode,oldMode);
+                setChartTitle();
             });
 
             scope.$on('item-resize',function(event,container){
@@ -193,34 +191,40 @@ app.directive('ktDashboardWidget',[ 'dataService',function (dataService) {
                 toggleVisibilityHighchartsButtons(isEditing);
             });
 
-            var first = true;
             scope.$on(EVENT_CI_LIVE_DATA_RECEIVED,function(event, status, baseUrl, ci, id, category, data){
-                if (status && baseUrl == scope.baseurl && scope.selectedType.text == scope.types[0].text && ci == scope.displayitem.ci && id == scope.displayitem.id && category == scope.displayitem.category){
-                    if (first){
+                if (status && baseUrl == scope.baseurl &&
+                    scope.currentMode.text == scope.modes[0].text &&
+                    ci == scope.displayitem.ci &&
+                    id == scope.displayitem.id &&
+                    category == scope.displayitem.category){
+                    console.log(ci, id, category, data);
+                    if (!scope.config.series){
                         // create Series
-                        scope.config.series = [{data:[]}];
-                        first = false;
+                        scope.config.series = [{id:ci+id+category,data:[]}];
                     }
                     toggleLoading(false);
                     if (scope.config.series[0].data.length < 60) { // TODO anpassen, vielleicht abhängig von abtastrate machen
-                        scope.config.series[0].data.push([data.x, data.y]);
+                        scope.config.series[0].data.push([data.timestamp, data.value]);
                     } else {
-                        scope.config.series[0].data.push([data.x, data.y]);
+                        scope.config.series[0].data.push([data.timestamp, data.value]);
                         scope.config.series[0].data.shift();
                     }
                 }else{
-
+                    // do nothing, not the right data
                 }
-                //console.log(scope.config.series[0].data);
             });
 
             scope.$on(EVENT_CI_HISTORY_DATA_RECEIVED,function(event, status, baseUrl, ci, id, category, data){
-                if (status && baseUrl == scope.baseurl && scope.selectedType.text == scope.types[1].text && ci == scope.displayitem.ci && id == scope.displayitem.id && category == scope.displayitem.category){
+                if (status && baseUrl == scope.baseurl &&
+                    scope.currentMode.text == scope.modes[1].text &&
+                    ci == scope.displayitem.ci &&
+                    id == scope.displayitem.id &&
+                    category == scope.displayitem.category){
                     if(!scope.config.series){
-                        first = true;
-                        scope.config.series = [{data:[]}];
+                        scope.config.series = data;
                         toggleLoading(false);
-                        scope.config.series[0].data = data;
+                    }else{
+                        console.log("series: ",scope.config.series)
                     }
                 }else{
 
@@ -255,43 +259,38 @@ app.directive('ktDashboardWidget',[ 'dataService',function (dataService) {
                 scope.config.options.chart.animation = b;
             }
 
-            function selectTypeFromGivenOptions() {
-                //anpassen
-                if(scope.displayitem.realtime==true){
-                    scope.selectedType = scope.types[0]
-                }else{
-                    scope.selectedType = scope.types[1]
-                }
-            }
-
-            function configureHowToLoadNewData(newValue, oldValue) {
-                if (newValue.text == scope.types[0].text){
-
+            //TODO anpassen, variablen verständlicher machen
+            function configureHowToLoadNewData(newMode, oldMode) {
+                console.log(newMode);
+                if (newMode.text == scope.modes[0].text){
+                    console.log("live daten laden");
                     // configure how new data should arive
                     toggleAnimation(false);
                     //dataService.enableCPUUsageLive(scope.baseurl,scope.cpuId,scope.samplingRateLive);
                     dataService.enableCILiveTimer(scope.baseurl, scope.displayitem.ci, scope.displayitem.id, scope.displayitem.category, scope.samplingRateLive);
                 }
-                if (newValue.text == scope.types[1].text){
-
+                if (newMode.text == scope.modes[1].text){
+                    console.log("history daten laden");
                     // configure how new data should arive
                     toggleAnimation(true);
                     dataService.getCiHistoryData(scope.baseurl,scope.displayitem.ci, scope.displayitem.id, scope.displayitem.category)
                 }
 
-                if (newValue.text == scope.types[1].text && oldValue.text == scope.types[0].text){
+                if (newMode.text == scope.modes[1].text && oldMode.text == scope.modes[0].text){
+                    console.log("delete intervalrr in direktive");
                     dataService.disableCiLiveTimer(scope.baseurl,scope.displayitem.ci, scope.displayitem.id, scope.displayitem.category);
                 }
             }
 
-            function setTitle(title) {
-                scope.config.title.text = title;
+            function setChartTitle() {
+                delete scope.config.title.text;
+                scope.config.title.text = scope.displayitem.title+ " - " +scope.currentMode.text;
             }
 
             function DialogSettingsContoller($scope, $mdDialog){
-                $scope.selectedType = scope.selectedType;
-                $scope.title = scope.config.title.text;
-                $scope.types = scope.types;
+                $scope.currentMode = scope.currentMode;
+                $scope.title = scope.displayitem.title;
+                $scope.modes = scope.modes;
                 $scope.samplingRateLive = scope.samplingRateLive;
 
                 $scope.cancel = function() {
@@ -302,18 +301,19 @@ app.directive('ktDashboardWidget',[ 'dataService',function (dataService) {
 
                     var answer = {};
                     answer['newTitle'] = $scope.title;
-                    answer['newType'] = $scope.selectedType;
+                    answer['newMode'] = $scope.currentMode;
                     answer['newSamplingRateLive'] = $scope.samplingRateLive;
 
                     $mdDialog.hide(answer);
                 };
             }
 
+
+
         }],
         link: function (scope, element) {
 
             element.on('$destroy', function() {
-                //TODO aufräumen ,falls nötig
                 dataService.disableCiLiveTimer(scope.baseurl,scope.displayitem.ci,scope.displayitem.id,scope.displayitem.category);
             });
 

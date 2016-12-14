@@ -10,15 +10,15 @@ app.directive('ktDashboardEditSideNav',[ 'dataService',   function(dataService){
         restrict: 'E',
         controller: ['$scope','$rootScope','$timeout', function MyTabsController($scope,$rootScope,$timeout) {
 
-            const CPUS = "cpus";
-            const CPU_CORES = "cpu-cores";
-            const GPUS = "gpus";
-            const MEMORY = "memory";
-            const DISKS = "disks";
-            const NETWORK = "network";
-            const PARTITIONS = "partitions";
-            const PROCESSES = "processes";
-            const SYSTEM = "system";
+            const CI_CPUS = "cpus";
+            const CI_CPU_CORES = "cpu-cores";
+            const CI_GPUS = "gpus";
+            const CI_MEMORY = "memory";
+            const CI_DISKS = "disks";
+            const CI_NETWORK = "network";
+            const CI_PARTITIONS = "partitions";
+            const CI_PROCESSES = "processes";
+            const CI_SYSTEM = "system";
 
             var scope = $scope;
             var rootScope = $rootScope;
@@ -26,15 +26,15 @@ app.directive('ktDashboardEditSideNav',[ 'dataService',   function(dataService){
             scope.lastTab = [];
 
             scope.cis =[
-                {label:CPUS,action:selectCi},
-                {label:CPU_CORES,action:selectCi},
-                {label:GPUS,action:selectCi},
-                {label:MEMORY,action:selectCi},
-                {label:DISKS,action:selectCi},
-                {label:NETWORK,action:selectCi},
-                {label:PARTITIONS,action:selectCi},
-                {label:PROCESSES,action:selectCi},
-                {label:SYSTEM,action:selectCi}
+                {label:CI_CPUS,action:selectCi},
+                {label:CI_CPU_CORES,action:selectCi},
+                {label:CI_GPUS,action:selectCi},
+                {label:CI_MEMORY,action:selectCi},
+                {label:CI_DISKS,action:selectCi},
+                {label:CI_NETWORK,action:selectCi},
+                {label:CI_PARTITIONS,action:selectCi},
+                {label:CI_PROCESSES,action:selectCi},
+                {label:CI_SYSTEM,action:selectCi}
             ];
 
             scope.ids = [];
@@ -53,8 +53,8 @@ app.directive('ktDashboardEditSideNav',[ 'dataService',   function(dataService){
                 if(status){
                     if(ciName==scope.selectedCi.label){
                         scope.ids = [];
-                        angular.forEach(ids,function(object){
-                            scope.ids.push({label:object.label,action:selectId})
+                        angular.forEach(ids,function(id){
+                            scope.ids.push({label:id,action:selectId})
                         });
                         scope.idsLoading = false;
                     }
@@ -69,8 +69,8 @@ app.directive('ktDashboardEditSideNav',[ 'dataService',   function(dataService){
                 if(status){
                     if(ciName==scope.selectedCi.label){
                         scope.categories = [];
-                        angular.forEach(cats,function(object){
-                            scope.categories.push({label:object.label,action:selectCategory})
+                        angular.forEach(cats,function(catName){
+                            scope.categories.push({label:catName,action:selectCategory})
                         });
                         scope.catsLoading = false;
                     }
@@ -84,14 +84,14 @@ app.directive('ktDashboardEditSideNav',[ 'dataService',   function(dataService){
                 scope.selectedCi = ci;
                 scope.idsLoading= true;
                 loadIds(ci);
+                scope.catsLoading= true;
+                loadCats(0);
                 scope.selectedSideNavIndex = 1;
                 scope.lastTab.push(0);
             }
 
             function selectId (id) {
                 scope.selectedId = id;
-                scope.catsLoading= true;
-                loadCats(id.label);
                 scope.selectedSideNavIndex = 2;//Kategorie Auswahl
                 scope.lastTab.push(1);
             }
@@ -108,9 +108,6 @@ app.directive('ktDashboardEditSideNav',[ 'dataService',   function(dataService){
             scope.$watch('selectedSideNavIndex',function(newValue,oldValue){
                 if(scope.selectedSideNavIndex == 0){
                     scope.ids=[];
-                    scope.categories=[];
-                }
-                if(scope.selectedSideNavIndex == 1){
                     scope.categories=[];
                 }
             });
