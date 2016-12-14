@@ -1,6 +1,6 @@
 <kt-dashboards-toolbar ng-cloak="" ></kt-dashboards-toolbar>
 
-<kt-dashboard-edit-side-nav ng-show="isEditMode"></kt-dashboard-edit-side-nav>
+<kt-dashboard-edit-side-nav ng-show="$root.isEditMode"></kt-dashboard-edit-side-nav>
 
 <md-tabs class="on-top no-tab-panel main" flex layout="column" layout-fill md-selected="selectedDashboard">
     <md-tab ng-cloak layout-fill ng-repeat="dashboard in dashboards" label="{{dashboard.title}}">

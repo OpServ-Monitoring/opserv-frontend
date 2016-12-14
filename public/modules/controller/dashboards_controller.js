@@ -6,8 +6,7 @@ app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSide
     var rootScope = $rootScope;
 
     scope.isFabOpen = false;
-    scope.isEditMode = false;
-
+    rootScope.isEditMode = false;
 
     scope.gridsterOpts = {
         columns: 30, // the width of the grid, in columns
@@ -47,7 +46,6 @@ app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSide
         }
     };
 
-
     prefService.getDashboards(0);
 
     scope.$on(EVENT_DASHBOARDS_RECEIVED,function(event,success,data){
@@ -66,7 +64,11 @@ app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSide
     };
 
     scope.addDashboard = function(){
-        console.log("todo implement")
+        rootScope.dashboards.push({
+            title: 'My Dashboard',
+            widgets:[],
+            baseUrl: ''
+        });
     };
 
     scope.deleteCurrentDashboard = function(tab){
@@ -80,6 +82,7 @@ app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSide
     };
 
     scope.addWidget = function(ci, id, cat){
+
         var widget = {
             sizeX: 15,
             sizeY: 10,
@@ -89,11 +92,12 @@ app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSide
                 ci: ci.label,
                 id: id.label,
                 category: cat.label,
-                title: ci.label+" "+id.label+" "+cat.label+" - Live",
+                title: ci.label+" "+id.label+" "+cat.label,
                 realtime: true,
                 displayAsChart:true
             }
         };
+
         //TODO -Live anpassen, je nachdem welches CI es ist
         rootScope.dashboards[scope.selectedDashboard].widgets.push(widget);
     };
@@ -115,7 +119,7 @@ app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSide
             scope.gridsterOpts.draggable.enabled = false;
             rootScope.$broadcast('toggleEditMode',false);
         }
-        scope.isEditMode = !scope.isEditMode;
+        rootScope.isEditMode = !rootScope.isEditMode;
         $mdSidenav('left').toggle();
     };
 

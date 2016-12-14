@@ -11,10 +11,11 @@ app.directive('ktDashboardWidget',[ 'dataService',function (dataService) {
             dashboardindex: '=',
             displayitem: '='
         },
-        controller: ['$scope','$mdDialog', function CPUUsageController($scope,$mdDialog) {
+        controller: ['$scope','$mdDialog', '$rootScope', function CPUUsageController($scope,$mdDialog,$rootScope) {
             //-------------------------- variables -------------------------------------------------------------------------
 
             var scope = $scope;
+            var rootScope = $rootScope;
 
             scope.openSettings = function () {
                 $mdDialog.show({
@@ -40,10 +41,6 @@ app.directive('ktDashboardWidget',[ 'dataService',function (dataService) {
                 scope.$emit("delete-widget",scope.dashboardindex,scope.widgetindex);
             };
 
-            scope.$on('toggleEditMode',function(event, isEditing){
-                scope.isEditing = isEditing;
-            });
-
             scope.modes =[
                 {text:"Live"},
                 {text:"History"}
@@ -60,7 +57,7 @@ app.directive('ktDashboardWidget',[ 'dataService',function (dataService) {
             scope.samplingRateLive = 1000;
             scope.samplingRateHistorie = 86400000; // 1 Tag
 
-            scope.cpuId = 0;
+            scope.isEditing = rootScope.isEditMode;
 
             scope.config = {
                 options: {
@@ -69,7 +66,7 @@ app.directive('ktDashboardWidget',[ 'dataService',function (dataService) {
                         animation: true,
                         events: {
                             load: function () {
-                                toggleVisibilityHighchartsButtons(scope.isEditing);
+                                toggleVisibilityHighchartsButtons(rootScope.isEditMode)
                             }
                         }
                     },
@@ -197,10 +194,10 @@ app.directive('ktDashboardWidget',[ 'dataService',function (dataService) {
                     ci == scope.displayitem.ci &&
                     id == scope.displayitem.id &&
                     category == scope.displayitem.category){
-                    console.log(ci, id, category, data);
                     if (!scope.config.series){
                         // create Series
                         scope.config.series = [{id:ci+id+category,data:[]}];
+                        //little dirty hack für die editbuttons wenn ein neues diagramm hinzugefügt wird
                     }
                     toggleLoading(false);
                     if (scope.config.series[0].data.length < 60) { // TODO anpassen, vielleicht abhängig von abtastrate machen
@@ -231,7 +228,6 @@ app.directive('ktDashboardWidget',[ 'dataService',function (dataService) {
                 }
             });
 
-
             //-------------------------- Helper ----------------------------------------------------------------------------
 
             function toggleVisibilityHighchartsButtons(isEditing) {
@@ -261,23 +257,23 @@ app.directive('ktDashboardWidget',[ 'dataService',function (dataService) {
 
             //TODO anpassen, variablen verständlicher machen
             function configureHowToLoadNewData(newMode, oldMode) {
-                console.log(newMode);
+
                 if (newMode.text == scope.modes[0].text){
-                    console.log("live daten laden");
+                    console.log(scope.displayitem);
                     // configure how new data should arive
                     toggleAnimation(false);
                     //dataService.enableCPUUsageLive(scope.baseurl,scope.cpuId,scope.samplingRateLive);
                     dataService.enableCILiveTimer(scope.baseurl, scope.displayitem.ci, scope.displayitem.id, scope.displayitem.category, scope.samplingRateLive);
                 }
                 if (newMode.text == scope.modes[1].text){
-                    console.log("history daten laden");
+
                     // configure how new data should arive
                     toggleAnimation(true);
                     dataService.getCiHistoryData(scope.baseurl,scope.displayitem.ci, scope.displayitem.id, scope.displayitem.category)
                 }
 
                 if (newMode.text == scope.modes[1].text && oldMode.text == scope.modes[0].text){
-                    console.log("delete intervalrr in direktive");
+
                     dataService.disableCiLiveTimer(scope.baseurl,scope.displayitem.ci, scope.displayitem.id, scope.displayitem.category);
                 }
             }
