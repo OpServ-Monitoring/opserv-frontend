@@ -15,7 +15,7 @@ app.directive('ktDashboardEditSideNav',[ 'dataService',   function(dataService){
             const CI_GPUS = "gpus";
             const CI_MEMORY = "memory";
             const CI_DISKS = "disks";
-            const CI_NETWORK = "network";
+            const CI_NETWORK = "networks";
             const CI_PARTITIONS = "partitions";
             const CI_PROCESSES = "processes";
             const CI_SYSTEM = "system";
@@ -58,6 +58,7 @@ app.directive('ktDashboardEditSideNav',[ 'dataService',   function(dataService){
                         });
                         scope.idsLoading = false;
                     }
+                    loadCats(scope.ids[0].label);
                 }else{
                     //TODO display error toast
                     console.log("error beim Laden der CI - IDs")
@@ -85,7 +86,6 @@ app.directive('ktDashboardEditSideNav',[ 'dataService',   function(dataService){
                 scope.idsLoading= true;
                 loadIds(ci);
                 scope.catsLoading= true;
-                loadCats(0);
                 scope.selectedSideNavIndex = 1;
                 scope.lastTab.push(0);
             }
