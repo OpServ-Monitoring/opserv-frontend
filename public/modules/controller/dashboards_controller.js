@@ -1,7 +1,7 @@
 /**
  * Created by Snare on 24.08.16.
  */
-app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSidenav, $mdDialog, $timeout){
+app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSidenav, $mdToast, $timeout){
     var scope = $scope;
     var rootScope = $rootScope;
 
@@ -28,7 +28,7 @@ app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSide
         defaultSizeY: 1, // the default height of a gridster item, if not specified
         //minSizeX: 20, // minimum column width of an item
         //maxSizeX: 40, // maximum column width of an item
-        //minSizeY: 20, // minumum row height of an item
+        //minSizeY: 10, // minumum row height of an item
         //maxSizeY: 40 // maximum row height of an item
         resizable: {
             enabled: false,
@@ -54,8 +54,16 @@ app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSide
     });
 
     scope.$on("delete-widget", function (event, dashboardIndex, widgetIndex) {
+        var forRollback = rootScope.dashboards[dashboardIndex].widgets[widgetIndex];
         rootScope.dashboards[dashboardIndex].widgets.splice(widgetIndex,1);
+        showToast("Widget",function (response) {
+            if ( response == 'ok' ) {
+                rootScope.dashboards[dashboardIndex].widgets.push(forRollback);
+            }
+        });
     });
+
+
 
     var originatorEv;
     scope.openMenu = function($mdOpenMenu, ev) {
@@ -71,9 +79,16 @@ app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSide
         });
     };
 
-    scope.deleteCurrentDashboard = function(tab){
-        var index = rootScope.dashboards.indexOf(tab);
+    scope.deleteCurrentDashboard = function(index){
+        var forRollback = rootScope.dashboards[index];
+        console.log(forRollback);
         rootScope.dashboards.splice(index,1);
+        showToast("Dashboard",function (response) {
+            if ( response == 'ok' ) {
+                console.log(forRollback);
+                rootScope.dashboards.push(forRollback);
+            }
+        });
     };
 
     scope.save = function(){
@@ -82,7 +97,6 @@ app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSide
     };
 
     scope.addWidget = function(ci, id, cat){
-
         var widget = {
             sizeX: 15,
             sizeY: 10,
@@ -126,5 +140,19 @@ app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSide
 
     scope.toggleLeft = function () {
         $mdSidenav('left').toggle();
+    };
+
+    function showToast(what, callback) {
+        var toast = $mdToast.simple()
+            .textContent(what+' gelöscht ')
+            .action('UNDO')
+            .highlightAction(true)
+            .highlightClass('md-accent')// Accent is used by default, this just demonstrates the usage.
+            .position("top right")
+            .hideDelay(5000);
+
+        $mdToast.show(toast).then(function(response) {
+            callback(response)
+        });
     }
 });

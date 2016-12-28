@@ -6,7 +6,7 @@
 }
 
 body {
-    background: url("../images/Dark_background_1920x1080.png") center top no-repeat;
+    background: #000000 url("../images/Dark_background_1920x1080.png") no-repeat center top;
     background-size: cover;
 }
 

@@ -155,6 +155,9 @@ app.directive('ktDashboardWidget',[ 'dataService',function (dataService) {
                         labelStyle: {
                             color: 'black'
                         }
+                    },
+                    tooltip:{
+                        enabled:false
                     }
                 },
                 title : {
@@ -262,7 +265,7 @@ app.directive('ktDashboardWidget',[ 'dataService',function (dataService) {
                     console.log(scope.displayitem);
                     // configure how new data should arive
                     toggleAnimation(false);
-                    //dataService.enableCPUUsageLive(scope.baseurl,scope.cpuId,scope.samplingRateLive);
+                    // dataService.enableCPUUsageLive(scope.baseurl,scope.cpuId,scope.samplingRateLive);
                     dataService.enableCILiveTimer(scope.baseurl, scope.displayitem.ci, scope.displayitem.id, scope.displayitem.category, scope.samplingRateLive);
                 }
                 if (newMode.text == scope.modes[1].text){
@@ -294,18 +297,13 @@ app.directive('ktDashboardWidget',[ 'dataService',function (dataService) {
                 };
 
                 $scope.submit = function() {
-
                     var answer = {};
                     answer['newTitle'] = $scope.title;
                     answer['newMode'] = $scope.currentMode;
                     answer['newSamplingRateLive'] = $scope.samplingRateLive;
-
                     $mdDialog.hide(answer);
                 };
             }
-
-
-
         }],
         link: function (scope, element) {
 
