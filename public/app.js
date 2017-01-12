@@ -5,10 +5,15 @@
 const EVENT_DASHBOARDS_RECEIVED = "dashboards_received";
 const EVENT_CI_LIVE_DATA_RECEIVED = "ci_live_data_received";
 const EVENT_CI_HISTORY_DATA_RECEIVED = "ci_history_data_received";
+const EVENT_CIS_RECEIVED = "cis_received";
+const EVENT_CI_IDS_RECEIVED = "ci_ids_received";
+const EVENT_CI_CATS_RECEIVED = "ci_cats_received";
+const EVENT_MEMORY_CATS_RECEIVED = "memory_cats_received";
+const EVENT_DELETE_WIDGET = "delete_widget";
+const EVENT_ITEM_RESIZE = "item_resize";
+const EVENT_TOGGLE_EDIT_MODE = "toggle_edit_mode";
+const EVENT_SAVE = "save";
 
-
-//Chart Types
-const CPU_USAGE = "cpu_usage";
 
 
 var app = angular.module('app',[
@@ -77,7 +82,6 @@ app.config(function($mdThemingProvider) {
         .backgroundPalette('white')
         .accentPalette('blue')
         .dark();
-
 });
 
 app.config(function(){
@@ -301,7 +305,7 @@ app.config(function(){
 app.run(function($rootScope) {
 
     // Admin Rolle in Root Scope laden, damit sie in HTML zugreifbar ist
-    $rootScope.CHART_CPU_LIVE = CPU_USAGE;
+    //$rootScope.CHART_CPU_LIVE = CPU_USAGE;
 });
 
 app.config(function ($routeProvider) {

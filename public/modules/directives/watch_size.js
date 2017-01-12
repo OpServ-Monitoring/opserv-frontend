@@ -15,7 +15,7 @@ app.directive( 'ktWatchSize', ['$rootScope',function(rootScope) {
                         && element[0].children[0].children[0].children[0])
                     {
                         container = element[0].children[0].children[0].children[0];
-                        rootScope.$broadcast('item-resize',container,element);
+                        rootScope.$broadcast(EVENT_ITEM_RESIZE,container,element);
                         scope.__height = element[0].offsetHeight;
                     }
                 }
@@ -25,7 +25,7 @@ app.directive( 'ktWatchSize', ['$rootScope',function(rootScope) {
                         && element[0].children[0].children[0].children[0])
                     {
                         container = element[0].children[0].children[0].children[0];
-                        rootScope.$broadcast('item-resize',container,element);
+                        rootScope.$broadcast(EVENT_ITEM_RESIZE,container,element);
                         scope.__width = element[0].offsetWidth;
                     }
 

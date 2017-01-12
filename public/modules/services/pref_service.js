@@ -16,9 +16,9 @@ app.factory('prefService',function($http, $rootScope, $timeout){
     service.getDashboards = function(userId){
         return $http.get('/api/preferences/v1/dashboards').then(function successCallback(response) {
             var standardItemsOne = [
-                { id: 0, sizeX: 15, sizeY: 10, row: 0, col: 0, displayItem: {ci: 'cpus', id: 0, category: 'usage', title:"CPUS 0 USAGE ", displayAsChart:true, realtime:true}},
-                { id: 1, sizeX: 15, sizeY: 10, row: 0, col: 15, displayItem: {ci: 'cpu-cores', id: 0, category: 'usage', title:"CPU-CORES 0 USAGE", displayAsChart:true, realtime:true}},
-                { id: 2, sizeX: 15, sizeY: 10, row: 10, col: 10, displayItem: {ci: 'cpu-cores', id: 1, category: 'usage', title:"CPU-CORES 1 USAGE", displayAsChart:true, realtime:true}}
+                { id: 0, sizeX: 15, sizeY: 10, row: 0, col: 0, displayItem: {ci: 'cpus', id: 0, category: 'usage', title:"CPUS 0 USAGE ", displayAsChart:true, realtime:true, samplingRate:1000}},
+                { id: 1, sizeX: 15, sizeY: 10, row: 0, col: 15, displayItem: {ci: 'cpu-cores', id: 0, category: 'usage', title:"CPU-CORES 0 USAGE", displayAsChart:true, realtime:true, samplingRate:1000}},
+                { id: 2, sizeX: 15, sizeY: 10, row: 10, col: 10, displayItem: {ci: 'cpu-cores', id: 1, category: 'usage', title:"CPU-CORES 1 USAGE", displayAsChart:true, realtime:true, samplingRate:1000}}
                 //{ id: 2, sizeX: 2, sizeY: 1, row: 0, col: 4, displayItem: {type: 'text', config:{}} },
                 //{ id: 3, sizeX: 2, sizeY: 1, row: 1, col: 0, displayItem: {type: 'text', config:{}} },
                 //{ id: 4, sizeX: 2, sizeY: 2, row: 1, col: 4, displayItem: {type: 'text', config:{}} },
@@ -26,7 +26,7 @@ app.factory('prefService',function($http, $rootScope, $timeout){
             ];
 
             var dashboards=[
-                { title: 'Default Monitor',widgets:standardItemsOne, baseUrl: ''} // https://397b6935.ngrok.io
+                { title: 'Default Monitor',widgets:standardItemsOne, baseUrl: 'http://localhost:4000'} // https://397b6935.ngrok.io
             ];
 
             // service.dashboards = response.data;

@@ -33,14 +33,14 @@
 </md-toolbar>
 <!--toolbar for large screens-->
 <md-toolbar md-scroll-shrink="false" layout="row"  hide-xs="">
-    <h3 >OpServ</h3>
+    <h3>OpServ</h3>
     <span flex=""></span>
-        <span >
+        <div flex="80">
             <md-tabs class="no-body" md-selected="selectedDashboard" md-center-tabs>
                 <md-tab  ng-repeat="dashboard in dashboards" label="{{dashboard.title}}">
                 </md-tab>
             </md-tabs>
-        </span>
+        </div>
     <span flex=""></span>
         <span>
             <md-menu  md-position-mode="target-right target" md-offset="-20 40">

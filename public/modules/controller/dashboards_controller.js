@@ -1,7 +1,7 @@
 /**
  * Created by Snare on 24.08.16.
  */
-app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSidenav, $mdToast, $timeout){
+app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSidenav, toastService, $timeout){
     var scope = $scope;
     var rootScope = $rootScope;
 
@@ -53,21 +53,23 @@ app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSide
         scope.isLoaded = true;
     });
 
-    scope.$on("delete-widget", function (event, dashboardIndex, widgetIndex) {
+    scope.$on(EVENT_DELETE_WIDGET, function (event, dashboardIndex, widgetIndex) {
         var forRollback = rootScope.dashboards[dashboardIndex].widgets[widgetIndex];
         rootScope.dashboards[dashboardIndex].widgets.splice(widgetIndex,1);
-        showToast("Widget",function (response) {
+        toastService.showDeletedToast("Widget",function (response) {
             if ( response == 'ok' ) {
                 rootScope.dashboards[dashboardIndex].widgets.push(forRollback);
+                save();
             }
         });
+        save();
     });
 
+    scope.$on(EVENT_SAVE, function (event) {
+        save();
+    });
 
-
-    var originatorEv;
     scope.openMenu = function($mdOpenMenu, ev) {
-        originatorEv = ev;
         $mdOpenMenu(ev);
     };
 
@@ -77,23 +79,19 @@ app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSide
             widgets:[],
             baseUrl: ''
         });
+        save();
     };
 
     scope.deleteCurrentDashboard = function(index){
         var forRollback = rootScope.dashboards[index];
-        console.log(forRollback);
         rootScope.dashboards.splice(index,1);
-        showToast("Dashboard",function (response) {
+        toastService.showDeletedToast("Dashboard",function (response) {
             if ( response == 'ok' ) {
-                console.log(forRollback);
                 rootScope.dashboards.push(forRollback);
+                save();
             }
         });
-    };
-
-    scope.save = function(){
-        console.log(scope.dashboards);
-        prefService.saveDashboards(scope.dashboards);
+        save();
     };
 
     scope.addWidget = function(ci, id, cat){
@@ -104,16 +102,23 @@ app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSide
             col: 0,
             displayItem: {
                 ci: ci.label,
-                id: id.label,
                 category: cat.label,
-                title: ci.label+" "+id.label+" "+cat.label,
                 realtime: true,
+                samplingRate: 1000,
                 displayAsChart:true
             }
         };
 
-        //TODO -Live anpassen, je nachdem welches CI es ist
+        if (id != undefined){
+            widget.displayItem.id=id.label;
+            widget.displayItem.title=ci.label+" "+id.label+" "+cat.label
+        }else{
+            widget.displayItem.id=undefined;
+            widget.displayItem.title=ci.label+" "+cat.label
+        }
+
         rootScope.dashboards[scope.selectedDashboard].widgets.push(widget);
+        save();
     };
 
     scope.toggleEditMode = function(){
@@ -124,35 +129,25 @@ app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSide
             scope.gridsterOpts.swapping = true;
             scope.gridsterOpts.resizable.enabled = true;
             scope.gridsterOpts.draggable.enabled = true;
-            rootScope.$broadcast('toggleEditMode',true);
+            rootScope.$broadcast(EVENT_TOGGLE_EDIT_MODE,true);
         }else{
             scope.gridsterOpts.pushing = false;
             scope.gridsterOpts.floating = false;
             scope.gridsterOpts.swapping = false;
             scope.gridsterOpts.resizable.enabled = false;
             scope.gridsterOpts.draggable.enabled = false;
-            rootScope.$broadcast('toggleEditMode',false);
+            rootScope.$broadcast(EVENT_TOGGLE_EDIT_MODE,false);
         }
         rootScope.isEditMode = !rootScope.isEditMode;
         $mdSidenav('left').toggle();
+        save();
     };
-
 
     scope.toggleLeft = function () {
         $mdSidenav('left').toggle();
     };
 
-    function showToast(what, callback) {
-        var toast = $mdToast.simple()
-            .textContent(what+' gelöscht ')
-            .action('UNDO')
-            .highlightAction(true)
-            .highlightClass('md-accent')// Accent is used by default, this just demonstrates the usage.
-            .position("top right")
-            .hideDelay(5000);
-
-        $mdToast.show(toast).then(function(response) {
-            callback(response)
-        });
+    function save() {
+        prefService.saveDashboards(scope.dashboards);
     }
 });
