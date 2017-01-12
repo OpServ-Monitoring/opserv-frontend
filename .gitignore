@@ -1,0 +1,5 @@
+# IntelliJ / PyCharm Configs
+.idea/*
+
+# Bower Components
+bower_components/*
