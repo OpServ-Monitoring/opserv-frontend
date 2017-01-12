@@ -16,6 +16,8 @@ app.factory('dataService',function($http, $rootScope, toastService,$timeout){
 
     const CURRENT_API_PATH = '/api/data/current';
     const REALTIME_QUERY_STRING = '?realtime=true';
+    const HISTORY_START_STRING = '?start=';
+    const HISTORY_END_STRING_MUST_BE_LAST = '&end=';
 
     service.enableCILiveTimer = function(baseUrl, ci, id, category, samplingRate){
         var intervalName = baseUrl+ci+id+category;
@@ -43,7 +45,8 @@ app.factory('dataService',function($http, $rootScope, toastService,$timeout){
     };
 
     service.getCiHistoryData = function(baseUrl, ci, id, category){
-        var urls = buildUrls(baseUrl,ci,id,category, false);
+        var urls = buildUrls(baseUrl,ci,id,category, false, 1484000000000, new Date().getTime());
+        console.log("url: ",urls.forData);
         $http.get(urls.forData).then(function successCallback(response) {
             var parsed_values = parseHistoryValues(response.data.data.values);
             $rootScope.$broadcast(EVENT_CI_HISTORY_DATA_RECEIVED, true, baseUrl, ci, id, category, parsed_values);
@@ -262,7 +265,7 @@ app.factory('dataService',function($http, $rootScope, toastService,$timeout){
         service.intervalMap[intervalName].usedBy = service.intervalMap[intervalName].usedBy - 1;
     }
 
-    function buildUrls(baseUrl, ci, id, cat, isLive) {
+    function buildUrls(baseUrl, ci, id, cat, isLive, historyStartTime, historyEndTime) {
         var urls = {forSamplingRate:'',forData:''};
         urls.forSamplingRate = baseUrl+CURRENT_API_PATH+'/'+ci+'/'+id+'/'+cat;
         if(id != undefined){
@@ -270,7 +273,7 @@ app.factory('dataService',function($http, $rootScope, toastService,$timeout){
                 urls.forData = baseUrl+CURRENT_API_PATH+'/'+ci+'/'+id+'/'+cat+REALTIME_QUERY_STRING;
                 return urls;
             }else{
-                urls.forData = baseUrl+CURRENT_API_PATH+'/'+ci+'/'+id+'/'+cat;
+                urls.forData = baseUrl+CURRENT_API_PATH+'/'+ci+'/'+id+'/'+cat+HISTORY_START_STRING+historyStartTime+HISTORY_END_STRING_MUST_BE_LAST+historyEndTime;
                 return urls;
             }
         }else{
@@ -278,7 +281,7 @@ app.factory('dataService',function($http, $rootScope, toastService,$timeout){
                 urls.forData = baseUrl+CURRENT_API_PATH+'/'+ci+'/'+cat+REALTIME_QUERY_STRING;
                 return urls;
             }else{
-                urls.forData = baseUrl+CURRENT_API_PATH+'/'+ci+'/'+cat;
+                urls.forData = baseUrl+CURRENT_API_PATH+'/'+ci+'/'+cat+HISTORY_START_STRING+historyStartTime+HISTORY_END_STRING_MUST_BE_LAST+historyEndTime;
                 return urls;
             }
         }

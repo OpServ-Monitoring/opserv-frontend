@@ -2,9 +2,7 @@
 app.factory('prefService',function($http, $rootScope, $timeout){
 
 //------------------------------------------------Variablen--------------------------------------------------------------------------------------------------------------------------------------//
-    var service = {
-        dashboards: []
-    };
+    var service = {};
 
 //------------------------------------------------ Dashboards --------------------------------------------------------------------------------------------------------------------------------------//
 
@@ -29,12 +27,9 @@ app.factory('prefService',function($http, $rootScope, $timeout){
                 { title: 'Default Monitor',widgets:standardItemsOne, baseUrl: 'http://localhost:4000'} // https://397b6935.ngrok.io
             ];
 
-            // service.dashboards = response.data;
-            // console.log(response.data.data.value);
-            // console.log(JSON.parse(response.data.data.value));
-            $rootScope.$broadcast(EVENT_DASHBOARDS_RECEIVED, true, dashboards); //TODO anpassen
+            $rootScope.$broadcast(EVENT_DASHBOARDS_RECEIVED, true, response.data.data.value);
         }, function errorCallback(response) {
-            $rootScope.$broadcast(EVENT_DASHBOARDS_RECEIVED, false, response.data);
+            $rootScope.$broadcast(EVENT_DASHBOARDS_RECEIVED, false, null);
         });
     };
 
@@ -44,7 +39,7 @@ app.factory('prefService',function($http, $rootScope, $timeout){
      * @returns {*}
      */
     service.saveDashboards = function(dashboards){
-        return $http.put('/api/preferences/v1/dashboards',dashboards).then(function successCallback(response) {
+        return $http.put('/api/preferences/v1/dashboards',{value:dashboards}).then(function successCallback(response) {
             $rootScope.$broadcast("dashboards-saved", true);
         }, function errorCallback(response) {
             $rootScope.$broadcast("dashboards-saved", false);

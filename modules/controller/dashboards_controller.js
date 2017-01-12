@@ -1,7 +1,7 @@
 /**
  * Created by Snare on 24.08.16.
  */
-app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSidenav, toastService, $timeout){
+app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSidenav, toastService, dialogService, $timeout){
     var scope = $scope;
     var rootScope = $rootScope;
 
@@ -46,10 +46,14 @@ app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSide
         }
     };
 
-    prefService.getDashboards(0);
+    prefService.getDashboards();
 
-    scope.$on(EVENT_DASHBOARDS_RECEIVED,function(event,success,data){
-        rootScope.dashboards=data;
+    scope.$on(EVENT_DASHBOARDS_RECEIVED,function(event,success,dashboards){
+        if (success){
+            rootScope.dashboards=dashboards;
+        }else{
+            toastService.showErrorToast("Laden der Dashboards fehlgeschlagen!")
+        }
         scope.isLoaded = true;
     });
 
@@ -69,8 +73,10 @@ app.controller('DashboardCtrl',function($scope, $rootScope, prefService, $mdSide
         save();
     });
 
-    scope.openMenu = function($mdOpenMenu, ev) {
-        $mdOpenMenu(ev);
+    scope.openOpservSettingsDialog = function() {
+        dialogService.showOpservSettings(function (newSettings) {
+
+        })
     };
 
     scope.addDashboard = function(){

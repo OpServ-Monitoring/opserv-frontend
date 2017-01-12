@@ -314,10 +314,6 @@ app.config(function ($routeProvider) {
         templateUrl: "views/dashboards.html",
         name: "Dashboards",
         controller: 'DashboardCtrl'
-    }).when("/login",{
-        templateUrl: "views/login.html",
-        name: "Login"
-        //controller: 'LoginCtrl'
     }).otherwise({
         redirectTo: "/"
     });

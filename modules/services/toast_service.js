@@ -8,7 +8,7 @@ app.factory('toastService',function($mdToast){
             .action('UNDO')
             .highlightAction(true)
             .highlightClass('md-accent')// Accent is used by default, this just demonstrates the usage.
-            .position("top right")
+            .position("top left")
             .hideDelay(5000);
 
         $mdToast.show(toast).then(function(response) {
@@ -19,7 +19,7 @@ app.factory('toastService',function($mdToast){
     service.showErrorToast = function (errorText) {
         $mdToast.show({
             hideDelay   :   3000,
-            position    :   'top right',
+            position    :   'top left',
             template    :   '<md-toast> ' +
                             '<div flex style="color:#FF5722" >Error</div> ' +
                             '<div >'+errorText+'</div> ' +
