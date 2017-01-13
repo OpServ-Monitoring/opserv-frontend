@@ -1,0 +1,41 @@
+env:
+  global:
+    secure: "nIqBucYO5Kwmgw1/TLq8vlpCagZOduE99I12FwsLCT8vV7oxZ7U4SQ+rhDT5/KC4EaGjyluAHsKhDYNyH5bSHctQ3wYeroXCbX45N2uZyhdYam3W/l9M+VKMJ4Wu7he5jxJ6iwxk4naoQeoNLpd+iKEFWWjTjV64RugrslEgKzuXQQ9BBVrZJzOzcRrePZkItiWefUkdwiupN2eXoW75ZLmOIdx0T6eDDqEO7aZjp5FqCCH7d1hECqlgdPxPUMfse4cIYZm441J4IGB/54rXz4I3inj0czLm8LAmpTNHAikwNFz+fRrpO5RX9890CVMJe09npuDHl7x6MueBqCPLXnyIYzU4b100oIbZa457NjCrTX2IgjohJv6P+gnEKGopjnUt07jjTsBcEqCvx25Fmc07hqwMXzDdlAb4un4QwUiJZJnvy035wNvWway4fP6fb4xVhSONH8Xwva3DtpK2R0d92RTsRfkzmzeAhGLOrPLtBUuEAjBEvLvnkWbfflGXiO+yZV+FHl1WaH1waC6lmccZGCf1YcsXfhMFrZqzMdmhJkuuNH4nrovrgFG1pwjyKUnrMwla6T6GVakvg4O6uYHRLsVfmWmZ4CliW3X6y6Tsu+2LT8Q0Rd7sTALR9vaE5qZzW0RxyY9xIrL+A+gRb3thIo/RlsejnqBdo5GnU1s="
+     
+install:
+- npm install -g bower
+
+script:
+# Save the latest SHa of the frontend
+- SHA=`git rev-parse --verify --short HEAD`
+
+# Clone the gh-pages branch of the backend to the local env
+- cd ..
+- git clone "https://github.com/OpServ-Monitoring/opserv-backend.git" --branch gh-pages --single-branch website
+
+# Exchange the current demo with the latest commit
+- cd website/docs/guide/
+- rm -rf demo
+- cp -r /home/travis/build/OpServ-Monitoring/opserv-frontend demo
+
+# Install the needed dependencies for the web-interface
+- cd demo
+- bower install
+
+# Remove unwanted files
+- rm -rf .git
+- rm .gitignore .travis.yml LICENSE README.md bower.json
+
+- cd /home/travis/build/OpServ-Monitoring/website
+
+# Config git
+- git config --global user.email "admin@opserv.org"
+- git config --global user.name "OpServ-Admin"
+- git remote set-url origin "https://OpServ-Admin:${GITHUB_AUTH_KEY}@github.com/OpServ-Monitoring/opserv-backend.git"
+
+# Commit the changes
+- git add --all
+- git commit -m"Automated push - Update web-interface demo. Triggering opserv-frontend commit -> ${SHA}"
+
+# Push the changes
+- git push origin gh-pages 2> /dev/null
