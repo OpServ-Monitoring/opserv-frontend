@@ -84,8 +84,9 @@ app.config(function($mdThemingProvider) {
         .dark();
 });
 
+//HIGHCHARTS OPTIONS
 app.config(function(){
-    //HIGHCHARTS OPTIONS:
+
 
     /**
      * Dark theme for Highcharts JS
@@ -301,6 +302,15 @@ app.config(function(){
     // Apply the theme
     Highcharts.setOptions(Highcharts.theme);
 });
+
+// app.config(function ($translateProvider) {
+//     $translateProvider.useStaticFilesLoader({
+//         prefix: 'lang-',
+//         suffix: '.json'
+//     });
+//
+//     $translateProvider.preferredLanguage('de_DE')
+// });
 
 app.run(function($rootScope) {
 

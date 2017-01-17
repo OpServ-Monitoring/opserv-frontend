@@ -9,9 +9,8 @@ app.factory('prefService',function($http, $rootScope, $timeout){
     /**
      * läd alle Dashobards eines Users
      * @returns {*}
-     * @param userId
      */
-    service.getDashboards = function(userId){
+    service.getDashboards = function(){
         return $http.get('/api/preferences/v1/dashboards').then(function successCallback(response) {
             var standardItemsOne = [
                 { id: 0, sizeX: 15, sizeY: 10, row: 0, col: 0, displayItem: {ci: 'cpus', id: 0, category: 'usage', title:"CPUS 0 USAGE ", displayAsChart:true, realtime:true, samplingRate:1000}},
