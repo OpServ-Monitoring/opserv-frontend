@@ -6,8 +6,10 @@ install:
 - npm install -g bower
 
 script:
-# Save the latest SHa of the frontend
-- SHA=`git rev-parse --verify --short HEAD`
+# Save some information about the triggering commit of the frontend
+- FRONTEND_COMMIT_SHA=`git rev-parse --verify HEAD`
+- FRONTEND_COMMIT_SHA_SHORT=`git rev-parse --verify --short HEAD`
+- FRONTEND_COMMIT_MESSAGE=`git log -1 --pretty=%B`
 
 # Clone the gh-pages branch of the backend to the local env
 - cd ..
@@ -35,7 +37,7 @@ script:
 
 # Commit the changes
 - git add --all
-- git commit -m"Automated push - Update web-interface demo. Triggering opserv-frontend commit -> ${SHA}"
+- git commit -m"Automated push to update the web-interface demo. Triggering opserv-frontend commit -> ${FRONTEND_COMMIT_SHA_SHORT} - ${FRONTEND_COMMIT_MESSAGE} - See github.com/OpServ-Monitoring/opserv-frontend/commit/${FRONTEND_COMMIT_SHA}"
 
 # Push the changes
 - git push origin gh-pages 2> /dev/null
