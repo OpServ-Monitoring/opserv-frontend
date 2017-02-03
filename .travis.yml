@@ -37,7 +37,7 @@ script:
 
 # Commit the changes
 - git add --all
-- git commit -m"Automated push to update the web-interface demo." -m"Triggering opserv-frontend commit -> ${FRONTEND_COMMIT_SHA_SHORT}:" -m"$\'{FRONTEND_COMMIT_MESSAGE}\'" -m"For more information visit github.com/OpServ-Monitoring/opserv-frontend/commit/${FRONTEND_COMMIT_SHA}"
+- git commit -m"Automated push to update the web-interface demo." -m"Triggering opserv-frontend commit -> ${FRONTEND_COMMIT_SHA_SHORT}:" -m'"'${FRONTEND_COMMIT_MESSAGE}'"' -m"For more information visit github.com/OpServ-Monitoring/opserv-frontend/commit/${FRONTEND_COMMIT_SHA}"
 
 # Push the changes
 - git push origin gh-pages 2> /dev/null
