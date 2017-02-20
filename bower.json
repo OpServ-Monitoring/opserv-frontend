@@ -22,7 +22,8 @@
     "highcharts": "^4.2.6",
     "highcharts-ng": "^0.0.12",
     "angular-viewport-watch": "git://github.com/wix/angular-viewport-watch#99b2289f4c7cbe0aa1c34414296460b40e48742",
-    "angular-translate": "^2.13.1"
+    "angular-translate": "^2.13.1",
+    "angular-mocks": "~1.6.2"
   },
   "resolutions": {
     "angular": "1.5.8"
